@@ -1,0 +1,120 @@
+import appdb from "../configs/db.config.js";
+import { eq, sql } from "drizzle-orm";
+import { city, currentweather, forecast } from "./weather.schema.js";
+import {
+  City,
+  Currentweather,
+  Forecast,
+  WeatherService,
+  Joincurrentweather,
+  Joinforecast,
+  Returncurrentweather,
+  JoinWeatherService,
+} from "../types/weather.d.js";
+
+export class Weatherservice implements WeatherService<JoinWeatherService> {
+  constructor(private readonly db = appdb) {}
+
+  async getCurrentWeather(cityName: string): Promise<Returncurrentweather | undefined> {
+    const result = await this.db
+      .select({
+        city: city.name,
+        country: city.country,
+        timestamp: currentweather.timestamp,
+        temperature: currentweather.temperature,
+        humidity: currentweather.humidity,
+        windSpeed: currentweather.windSpeed,
+        windDirection: currentweather.windDirection,
+        pressure: currentweather.pressure,
+        conditions: currentweather.weatherMain,
+        description: currentweather.weatherDesc,
+        sunrise: currentweather.sunrise,
+        sunset: currentweather.sunset,
+      })
+      .from(city)
+      .innerJoin(currentweather, eq(currentweather.cityId, city.id))
+      .where(eq(city.name, cityName));
+    // fnc to increase city searchcount
+    // store in cache
+    return result[0];
+  }
+
+  async getForecast(cityName: string): Promise<Joinforecast | undefined> {
+    const result = await this.db
+      .select()
+      .from(city)
+      .innerJoin(forecast, eq(forecast.cityId, city.id))
+      .where(eq(city.name, cityName));
+
+    return result[0];
+  }
+
+  async findCity(cityName: string): Promise<City | undefined> {
+    const result = await this.db.select().from(city).where(eq(city.name, cityName));
+
+    return result[0];
+  }
+
+  // unique oo
+  async createCity(args: City): Promise<City | undefined> {
+    const result = await this.db
+      .insert(city)
+      .values({
+        id: sql`uuid_generate_v4()`,
+        name: args.name,
+        country: args.country,
+        latitude: args.latitude,
+        longitude: args.longitude,
+        searchCount: args.searchCount,
+        lastSearched: sql`NOW()`,
+      })
+      .returning();
+
+    return result[0];
+  }
+
+  async createCurrentWeather(args: Currentweather): Promise<Currentweather | undefined> {
+    const result = await this.db
+      .insert(currentweather)
+      .values({
+        id: sql`uuid_generate_v4()`,
+        cityId: args.cityId,
+        timestamp: sql`TO_TIMESTAMP(${args.timestamp})`,
+        temperature: args.temperature,
+        humidity: args.humidity,
+        windSpeed: args.windSpeed,
+        windDirection: args.windDirection,
+        pressure: args.pressure,
+        weatherMain: args.weatherMain,
+        weatherDesc: args.weatherDesc,
+        sunrise: sql`TO_TIMESTAMP(${args.sunrise})`,
+        sunset: sql`TO_TIMESTAMP(${args.sunset})`,
+        lastUpdated: sql`NOW()`,
+      })
+      .returning();
+
+    return result[0];
+  }
+
+  async createForecast(args: Forecast): Promise<Forecast | undefined> {
+    const result = await this.db
+      .insert(forecast)
+      .values({
+        id: sql`uuid_generate_v4()`,
+        cityId: args.cityId,
+        forecastDate: args.forecastDate,
+        temperature: args.temperature,
+        humidity: args.humidity,
+        windSpeed: args.windSpeed,
+        windDirection: args.windDirection,
+        pressure: args.pressure,
+        weatherMain: args.weatherMain,
+        weatherDesc: args.weatherDesc,
+        rainVolume: args.rainVolume,
+        probability: args.probability,
+      })
+      .returning();
+
+    return result[0];
+  }
+}

@@ -1,15 +1,15 @@
 export interface City {
-  id: number;
+  id?: string;
   name: string;
   country: string;
   latitude: string;
   longitude: string;
   searchCount: number | null;
-  lastSearched: Date | null;
+  lastSearched?: Date | null;
 }
 
 export interface Currentweather {
-  id: string;
+  id?: string;
   cityId: string;
   timestamp: Date;
   temperature: number;
@@ -21,11 +21,11 @@ export interface Currentweather {
   weatherDesc: string;
   sunrise: Date;
   sunset: Date;
-  lastUpdated: Date;
+  lastUpdated?: Date | null;
 }
 
 export interface Forecast {
-  id: string;
+  id?: string;
   cityId: string;
   forecastDate: Date;
   temperature: number;
@@ -37,4 +37,58 @@ export interface Forecast {
   weatherDesc: string;
   rainVolume: number;
   probability: number;
+}
+export interface Returncurrentweather {
+  city: string;
+  country: string;
+  timestamp: Date;
+  temperature: number;
+  humidity: number;
+  windSpeed: number;
+  windDirection: number;
+  pressure: number;
+  conditions: string;
+  description: string;
+  sunrise: Date;
+  sunset: Date;
+};
+
+interface Rforecast {
+  forecastDate: Date;
+  temperature: number;
+  windSpeed: number;
+  humidity: number;
+  weatherMain: string;
+  weatherDesc: string;
+}
+export interface Returnforecast {
+  city: string;
+  country: string;
+  forecasts: Rforecast[];
+};
+
+export type Joincurrentweather = {
+  city: City;
+  currentweather: Currentweather;
+};
+
+export type Joinforecast = {
+  city: City;
+  forecast: Forecast;
+};
+
+export type JoinWeatherService =
+  | City
+  | Returncurrentweather
+  | Currentweather
+  | Forecast
+  | Joincurrentweather
+  | Joinforecast;
+
+export interface WeatherService<T> {
+  getCurrentWeather(cityName: string): Promise<T | undefined>;
+  getForecast(cityName: string): Promise<T | undefined>;
+  createCity(args: City): Promise<T | undefined>;
+  createCurrentWeather(args: Currentweather): Promise<T | undefined>;
+  createForecast(args: Forecast): Promise<T | undefined>;
 }
