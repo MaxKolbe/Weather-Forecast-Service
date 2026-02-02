@@ -1,5 +1,6 @@
 import appdb from "../configs/db.config.js";
 import { eq, sql } from "drizzle-orm";
+import { Weathercache } from "./weather.cache.js";
 import { city, currentweather, forecast } from "./weather.schema.js";
 import {
   City,
@@ -11,6 +12,8 @@ import {
   Returncurrentweather,
   JoinWeatherService,
 } from "../types/weather.d.js";
+
+const Cache = new Weathercache();
 
 export class Weatherservice implements WeatherService<JoinWeatherService> {
   constructor(private readonly db = appdb) {}
@@ -34,8 +37,16 @@ export class Weatherservice implements WeatherService<JoinWeatherService> {
       .from(city)
       .innerJoin(currentweather, eq(currentweather.cityId, city.id))
       .where(eq(city.name, cityName));
+
     // fnc to increase city searchcount
+
+    const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
+    console.log("cachedresulti is:", cachedResult)
     // store in cache
+    if (!cachedResult) {
+      await Cache.set(`get:currentweather:${cityName}`, 900, JSON.stringify(result[0]));
+    }
+
     return result[0];
   }
 
