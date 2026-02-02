@@ -6,16 +6,16 @@ import {
   City,
   Currentweather,
   Forecast,
-  WeatherService,
-  Joincurrentweather,
-  Joinforecast,
   Returncurrentweather,
-  JoinWeatherService,
+  Returnforecast,
+  JointWeatherService,
+  WeatherService,
+  Joinforecast,
 } from "../types/weather.d.js";
 
 const Cache = new Weathercache();
 
-export class Weatherservice implements WeatherService<JoinWeatherService> {
+export class Weatherservice implements WeatherService<JointWeatherService> {
   constructor(private readonly db = appdb) {}
 
   async getCurrentWeather(cityName: string): Promise<Returncurrentweather | undefined> {
@@ -41,8 +41,6 @@ export class Weatherservice implements WeatherService<JoinWeatherService> {
     // fnc to increase city searchcount
 
     const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
-    console.log("cachedresulti is:", cachedResult)
-    // store in cache
     if (!cachedResult) {
       await Cache.set(`get:currentweather:${cityName}`, 900, JSON.stringify(result[0]));
     }
@@ -66,7 +64,6 @@ export class Weatherservice implements WeatherService<JoinWeatherService> {
     return result[0];
   }
 
-  // unique oo
   async createCity(args: City): Promise<City | undefined> {
     const result = await this.db
       .insert(city)

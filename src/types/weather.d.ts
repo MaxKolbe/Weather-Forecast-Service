@@ -51,7 +51,7 @@ export interface Returncurrentweather {
   description: string;
   sunrise: Date;
   sunset: Date;
-};
+}
 
 interface Rforecast {
   forecastDate: Date;
@@ -65,24 +65,19 @@ export interface Returnforecast {
   city: string;
   country: string;
   forecasts: Rforecast[];
-};
-
-export type Joincurrentweather = {
-  city: City;
-  currentweather: Currentweather;
-};
+}
 
 export type Joinforecast = {
   city: City;
   forecast: Forecast;
 };
 
-export type JoinWeatherService =
+export type JointWeatherService =
   | City
   | Returncurrentweather
+  | Returnforecast
   | Currentweather
   | Forecast
-  | Joincurrentweather
   | Joinforecast;
 
 export interface WeatherService<T> {
