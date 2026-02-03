@@ -1,10 +1,10 @@
-import express from "express"
-import { getCurrentWeather, getWeatherForecast } from "./weather.controller.js"
+import express from "express";
+import { getCurrentWeather, getWeatherForecast } from "./weather.controller.js";
 
-const router = express.Router()
+const router = express.Router();
 
 // API routes
-router.get("/current", getCurrentWeather)
-router.get("/forecast", getWeatherForecast)
+router.get("/current", getCurrentWeather);
+router.get("/forecast", getWeatherForecast);
 
-export default router
+export default router;
