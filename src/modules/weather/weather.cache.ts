@@ -1,8 +1,8 @@
-import redisClient from "../configs/cache.config";
-import appdb from "../configs/db.config.js";
+import redisClient from "../../configs/cache.config";
+import appdb from "../../configs/db.config.js";
 import { sql } from "drizzle-orm";
 import { city } from "./weather.schema.js";
-import { JointWeatherService } from "../types/weather.d.js";
+import { JointWeatherService } from "../../types/weather.js";
 
 export class Weathercache {
   constructor() {}
@@ -15,7 +15,7 @@ export class Weathercache {
       const cityName: string[] = key.split(":");
       await appdb
         .update(city)
-        .set({ searchCount: sql`${city.searchCount} + 1` })
+        .set({ searchCount: sql`${city.searchCount} + 1`, lastSearched: sql`NOW()` })
         .where(sql`${city.name} = ${cityName.at(-1)}`);
     }
 

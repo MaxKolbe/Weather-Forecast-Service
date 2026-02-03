@@ -1,10 +1,10 @@
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import path from "path";
-import appdb from "../configs/db.config.js";
+import appdb from "../../configs/db.config.js";
 import { Weathercache } from "./weather.cache.js";
 import { Weatherservice } from "./weather.service.js";
-import { City, Returncurrentweather } from "../types/weather.d.js";
+import { Returncurrentweather } from "../../types/weather.js";
 
 dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -30,24 +30,18 @@ export class Fetchweather {
     }
 
     const data: any = await response.json();
-    const city: City | undefined = await Weather.findCity(cityName);
-    const newCityArr: string[] = [];
 
-    if (!city) {
-      const newCity = await Weather.createCity({
-        name: data.name,
-        country: data.sys.country,
-        latitude: data.coord.lat,
-        longitude: data.coord.lon,
-        searchCount: 1,
-      });
-
-      newCityArr.push(newCity!.id!, newCity!.name, newCity!.country);
-    }
+    const newCity = await Weather.createCity({
+      name: data.name,
+      country: data.sys.country,
+      latitude: data.coord.lat,
+      longitude: data.coord.lon,
+      searchCount: 1,
+    });
 
     // store in db
     await Weather.createCurrentWeather({
-      cityId: city?.id ? city.id : newCityArr[0]!,
+      cityId: newCity!.id!,
       timestamp: data.dt,
       temperature: data.main.temp,
       humidity: data.main.humidity,
@@ -60,11 +54,9 @@ export class Fetchweather {
       sunset: data.sys.sunset,
     });
 
-    // fnc to increase city searchcount
-
     const returnData: Returncurrentweather = {
-      city: city?.name ? city.name : newCityArr[1]!,
-      country: city?.country ? city.country : newCityArr[2]!,
+      city: newCity!.name,
+      country: newCity!.country,
       timestamp: new Date(data.dt * 1000),
       temperature: data.main.temp,
       humidity: data.main.humidity,
@@ -78,11 +70,7 @@ export class Fetchweather {
     };
 
     // store in cache
-    await Cache.set(
-      `get:currentweather:${city?.name ? city.name : newCityArr[1]!}`,
-      900,
-      JSON.stringify(returnData),
-    );
+    await Cache.set(`get:currentweather:${newCity!.name}`, 900, JSON.stringify(returnData));
 
     return returnData;
   }

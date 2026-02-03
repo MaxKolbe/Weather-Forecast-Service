@@ -1,7 +1,7 @@
 import cors from "cors";
 import express from "express";
 import errorHandler from "./middleware/errorHandler.js";
-import weatherRoute from "./modules/weather.routes.js";
+import weatherRoute from "./modules/weather/weather.routes.js";
 import { connectRedis } from "./configs/cache.config.js";
 
 const app = express();

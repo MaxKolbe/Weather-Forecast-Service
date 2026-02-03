@@ -1,9 +1,9 @@
-import appdb from "../configs/db.config.js";
-import responseHandler from "../utils/responseHandler.js";
+import appdb from "../../configs/db.config.js";
+import responseHandler from "../../utils/responseHandler.js";
 import { Request, Response, NextFunction } from "express";
 import { Weatherservice } from "./weather.service.js";
-import { Fetchweather } from "./weather.api.js";
 import { Weathercache } from "./weather.cache.js";
+import { Fetchweather } from "./weather.api.js";
 
 const Fetch = new Fetchweather();
 const Cache = new Weathercache();
@@ -11,6 +11,10 @@ const Weather = new Weatherservice(appdb);
 
 export const getCurrentWeather = async (req: Request, res: Response, next: NextFunction) => {
   const city = req.query.city?.toString().toLowerCase();
+
+  if (city === undefined) {
+    responseHandler("Please input a city", res, 400);
+  }
 
   try {
     // Check cache

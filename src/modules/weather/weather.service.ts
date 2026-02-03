@@ -1,4 +1,4 @@
-import appdb from "../configs/db.config.js";
+import appdb from "../../configs/db.config.js";
 import { eq, sql } from "drizzle-orm";
 import { Weathercache } from "./weather.cache.js";
 import { city, currentweather, forecast } from "./weather.schema.js";
@@ -11,7 +11,7 @@ import {
   JointWeatherService,
   WeatherService,
   Joinforecast,
-} from "../types/weather.d.js";
+} from "../../types/weather.js";
 
 const Cache = new Weathercache();
 
@@ -36,17 +36,17 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       })
       .from(city)
       .innerJoin(currentweather, eq(currentweather.cityId, city.id))
-      .where(eq(city.name, cityName)); 
+      .where(eq(city.name, cityName));
 
     // increment city searchcount
     await this.db
-      .update(city) 
-      .set({ searchCount: sql`${city.searchCount} + 1` })
-      .where(eq(city.name, cityName));
+      .update(city)
+      .set({ searchCount: sql`${city.searchCount} + 1`, lastSearched: sql`NOW()` })
+      .where(eq(city.name, cityName)); // on error do nothing ?
 
-    // get cache || set cache 
+    // get cache || set cache
     const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
-    if ( cachedResult === undefined) {
+    if (result[0] !== undefined && cachedResult === undefined) {
       await Cache.set(`get:currentweather:${cityName}`, 900, JSON.stringify(result[0]));
     }
 
