@@ -21,6 +21,7 @@ export class Fetchweather {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`,
     );
+
     if (!response.ok) {
       if (response.status === 404) {
         return;
@@ -89,32 +90,5 @@ export class Fetchweather {
   //   async fetchForecast(cityName: string) {
   //     const response = await fetch(`api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=metric`);
 
-  //     if (!response.ok) {
-  //       throw new Error(`Response status: ${response.status}`); // maybe use the error habdler here. TEST!!
-  //     }
-
-  //     const data: any = await response.json();
-
-  //     const newCity: City | undefined = await Weather.createCity(data.name);
-
-  //     if (!newCity) {
-  //       return;
-  //     }
-
-  //     const newCurrentWeather = await Weather.createCurrentWeather({
-  //       cityId: newCity.id,
-  //       timestamp: data.dt,
-  //       temperature: data.main.temp,
-  //       humidity: data.main.humidity,
-  //       windSpeed: data.wind.speed,
-  //       windDirection: data.wind.deg,
-  //       pressure: data.main.pressure,
-  //       weatherMain: data.weather[0].main,
-  //       weatherDesc: data.weather[0].description,
-  //       sunrise: data.sys.sunrise,
-  //       sunset: data.sys.sunset,
-  //     });
-
-  //     //store in cache oooo
   //   }
 }

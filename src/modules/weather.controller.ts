@@ -1,5 +1,5 @@
-import responseHandler from "../utils/responseHandler.js";
 import appdb from "../configs/db.config.js";
+import responseHandler from "../utils/responseHandler.js";
 import { Request, Response, NextFunction } from "express";
 import { Weatherservice } from "./weather.service.js";
 import { Fetchweather } from "./weather.api.js";

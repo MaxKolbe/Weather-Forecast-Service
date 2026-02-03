@@ -36,12 +36,17 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       })
       .from(city)
       .innerJoin(currentweather, eq(currentweather.cityId, city.id))
+      .where(eq(city.name, cityName)); 
+
+    // increment city searchcount
+    await this.db
+      .update(city) 
+      .set({ searchCount: sql`${city.searchCount} + 1` })
       .where(eq(city.name, cityName));
 
-    // fnc to increase city searchcount
-
+    // get cache || set cache 
     const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
-    if (typeof cachedResult === undefined) {
+    if ( cachedResult === undefined) {
       await Cache.set(`get:currentweather:${cityName}`, 900, JSON.stringify(result[0]));
     }
 
