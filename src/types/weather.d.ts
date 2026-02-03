@@ -2,8 +2,8 @@ export interface City {
   id?: string;
   name: string;
   country: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   searchCount: number | null;
   lastSearched?: Date | null;
 }

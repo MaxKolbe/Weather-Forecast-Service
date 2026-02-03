@@ -21,8 +21,10 @@ export class Fetchweather {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`,
     );
-
     if (!response.ok) {
+      if (response.status === 404) {
+        return;
+      }
       throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
     }
 

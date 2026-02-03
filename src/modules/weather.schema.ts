@@ -5,8 +5,8 @@ export const city = p.pgTable("city", {
   id: p.uuid().primaryKey().notNull(),
   name: p.varchar({ length: 256 }).notNull().unique(),
   country: p.varchar({ length: 256 }).notNull(),
-  latitude: p.varchar({ length: 256 }).notNull(),
-  longitude: p.varchar({ length: 256 }).notNull(),
+  latitude: p.numeric({ mode: 'number' }).notNull(),
+  longitude: p.numeric({ mode: 'number' }).notNull(),
   searchCount: p.integer("search_count"),
   lastSearched: p.timestamp("last_searched"),
 }, (table) => [

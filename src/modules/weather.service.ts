@@ -41,7 +41,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     // fnc to increase city searchcount
 
     const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
-    if (!cachedResult) {
+    if (typeof(cachedResult) === undefined) {
       await Cache.set(`get:currentweather:${cityName}`, 900, JSON.stringify(result[0]));
     }
 
@@ -69,7 +69,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       .insert(city)
       .values({
         id: sql`uuid_generate_v4()`,
-        name: args.name,
+        name: args.name.toLowerCase(),
         country: args.country,
         latitude: args.latitude,
         longitude: args.longitude,
