@@ -37,9 +37,9 @@ export const currentweather = p.pgTable("currentweather", {
 export const forecast = p.pgTable("forecast", {
   id: p.uuid().primaryKey().notNull(),
   cityId: p
-    .uuid()
+    .uuid("city_id")
     .references(() => city.id)
-    .notNull(),
+    .notNull(), 
   forecastDate: p.timestamp().notNull(),
   temperature: p.numeric({ mode: "number" }).notNull(),
   windSpeed: p.numeric({ mode: "number" }).notNull(),

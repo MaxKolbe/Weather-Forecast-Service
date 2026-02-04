@@ -54,31 +54,25 @@ export interface Returncurrentweather {
 }
 
 interface Rforecast {
-  forecastDate: Date;
+  date: Date;
   temperature: number;
-  windSpeed: number;
   humidity: number;
-  weatherMain: string;
-  weatherDesc: string;
+  windSpeed: number;
+  conditions: string;
+  description: string;
 }
 export interface Returnforecast {
   city: string;
   country: string;
-  forecasts: Rforecast[];
+  forecast: Rforecast;
 }
-
-export type Joinforecast = {
-  city: City;
-  forecast: Forecast;
-};
 
 export type JointWeatherService =
   | City
   | Returncurrentweather
   | Returnforecast
   | Currentweather
-  | Forecast
-  | Joinforecast;
+  | Forecast;
 
 export interface WeatherService<T> {
   getCurrentWeather(cityName: string): Promise<T | undefined>;

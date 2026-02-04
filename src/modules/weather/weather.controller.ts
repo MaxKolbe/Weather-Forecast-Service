@@ -47,4 +47,40 @@ export const getCurrentWeather = async (req: Request, res: Response, next: NextF
   }
 };
 
-export const getWeatherForecast = (req: Request, res: Response, next: NextFunction) => {};
+export const getWeatherForecast = async (req: Request, res: Response, next: NextFunction) => {
+  const city = req.query.city?.toString().toLowerCase();
+
+  if (city === undefined) {
+    responseHandler("Please input a city", res, 400);
+  }
+
+  try {
+    // Check cache
+    console.log("CHECKING CACHE");
+    const a_forecast = await Cache.get(`get:forecast:${city}`);
+    if (a_forecast) {
+      console.log(`FOUND SOMETHING IN CACHE`);
+      return responseHandler("Success: Weather Forecast found", res, 200, a_forecast);
+    }
+
+    // Check db
+    console.log("CHECKING DATABASE");
+    const b_forecast = await Weather.getForecast(city!);
+    if (b_forecast) {
+      console.log(`FOUND SOMETHING IN DATABASE`);
+      return responseHandler("Success: Weather Forecast found", res, 200, b_forecast);
+    }
+
+    // fetch from api
+    console.log("CHECKING API");
+    const c_forecast = await Fetch.fetchForecast(city!);
+    if (c_forecast) {
+      console.log(`FOUND SOMETHING IN API`);
+      return responseHandler(`Success: Weather Forecast found`, res, 200, c_forecast);
+    }
+
+    return responseHandler(`Could not find the Weather Forecast for city: ${city}`, res, 404);
+  } catch (err) {
+    next(err);
+  }
+};

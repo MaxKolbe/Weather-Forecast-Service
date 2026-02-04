@@ -10,7 +10,6 @@ import {
   Returnforecast,
   JointWeatherService,
   WeatherService,
-  Joinforecast,
 } from "../../types/weather.js";
 
 const Cache = new Weathercache();
@@ -42,7 +41,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     await this.db
       .update(city)
       .set({ searchCount: sql`${city.searchCount} + 1`, lastSearched: sql`NOW()` })
-      .where(eq(city.name, cityName)); // on error do nothing ?
+      .where(eq(city.name, cityName)); // on error do nothing...log ?
 
     // get cache || set cache
     const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
@@ -53,37 +52,55 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result[0];
   }
 
-  async getForecast(cityName: string): Promise<Joinforecast | undefined> {
+  async getForecast(cityName: string): Promise<Returnforecast | undefined> {
     const result = await this.db
-      .select()
+      .select({
+        city: city.name,
+        country: city.country,
+        date: forecast.forecastDate,
+        temperature: forecast.temperature,
+        humidity: forecast.humidity,
+        windSpeed: forecast.windSpeed,
+        conditions: forecast.weatherMain,
+        description: forecast.weatherDesc,
+      })
       .from(city)
       .innerJoin(forecast, eq(forecast.cityId, city.id))
-      .where(eq(city.name, cityName));
+      .where(sql`${city.name} = ${cityName} AND ${forecast.forecastDate}::DATE = NOW()::DATE`);
+    // .where(eq(city.name, cityName));
 
-    return result[0];
-  }
+    console.log("THIS IS RESULT[0]", result[0])
+    if (result[0] !== undefined) {
+      const returnData = {
+        city: result[0].city,
+        country: result[0].country,
+        forecast: {
+          date: result[0].date,
+          temperature: result[0].temperature,
+          humidity: result[0].humidity,
+          windSpeed: result[0].windSpeed,
+          conditions: result[0].conditions,
+          description: result[0].description,
+        },
+      };
+      console.log("RETURNDATA variable in database layer:", returnData);
 
-  async findCity(cityName: string): Promise<City | undefined> {
-    const result = await this.db.select().from(city).where(eq(city.name, cityName));
+      // increment city searchcount
+      await this.db
+        .update(city)
+        .set({ searchCount: sql`${city.searchCount} + 1`, lastSearched: sql`NOW()` })
+        .where(eq(city.name, cityName)); // on error do nothing...log ?
 
-    return result[0];
-  }
+      // get cache || set cache
+      const cachedResult = await Cache.get(`get:forecast:${cityName}`);
+      if (result[0] !== undefined && cachedResult === undefined) {
+        await Cache.set(`get:forecast:${cityName}`, 3600, JSON.stringify(result[0]));
+      }
 
-  async createCity(args: City): Promise<City | undefined> {
-    const result = await this.db
-      .insert(city)
-      .values({
-        id: sql`uuid_generate_v4()`,
-        name: args.name.toLowerCase(),
-        country: args.country,
-        latitude: args.latitude,
-        longitude: args.longitude,
-        searchCount: args.searchCount,
-        lastSearched: sql`NOW()`,
-      })
-      .returning();
+      return returnData;
+    }
 
-    return result[0];
+    return undefined;
   }
 
   async createCurrentWeather(args: Currentweather): Promise<Currentweather | undefined> {
@@ -115,7 +132,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       .values({
         id: sql`uuid_generate_v4()`,
         cityId: args.cityId,
-        forecastDate: args.forecastDate,
+        forecastDate: sql`TO_TIMESTAMP(${args.forecastDate})`,
         temperature: args.temperature,
         humidity: args.humidity,
         windSpeed: args.windSpeed,
@@ -127,6 +144,29 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
         probability: args.probability,
       })
       .returning();
+
+    return result[0];
+  }
+
+  async createCity(args: City): Promise<City | undefined> {
+    const result = await this.db
+      .insert(city)
+      .values({
+        id: sql`uuid_generate_v4()`,
+        name: args.name.toLowerCase(),
+        country: args.country,
+        latitude: args.latitude,
+        longitude: args.longitude,
+        searchCount: args.searchCount,
+        lastSearched: sql`NOW()`,
+      })
+      .returning();
+
+    return result[0];
+  }
+
+  async findCity(cityName: string): Promise<City | undefined> {
+    const result = await this.db.select().from(city).where(eq(city.name, cityName));
 
     return result[0];
   }
