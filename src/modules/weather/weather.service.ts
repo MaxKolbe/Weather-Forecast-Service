@@ -67,7 +67,6 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       .from(city)
       .innerJoin(forecast, eq(forecast.cityId, city.id))
       .where(sql`${city.name} = ${cityName} AND ${forecast.forecastDate}::DATE = NOW()::DATE`);
-    // .where(eq(city.name, cityName));
 
     console.log("THIS IS RESULT[0]", result[0])
     if (result[0] !== undefined) {

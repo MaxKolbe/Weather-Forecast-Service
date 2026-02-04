@@ -24,8 +24,8 @@ export const currentweather = p.pgTable("currentweather", {
   timestamp: p.timestamp().notNull(),
   temperature: p.numeric({ mode: "number" }).notNull(),
   humidity: p.integer().notNull(),
-  windSpeed: p.numeric({ mode: "number" }).notNull(),
-  windDirection: p.numeric({ mode: "number" }).notNull(),
+  windSpeed: p.numeric("wind_speed", { mode: "number" }).notNull(),
+  windDirection: p.numeric("wind_direction",{ mode: "number" }).notNull(),
   pressure: p.numeric({ mode: "number" }).notNull(),
   weatherMain: p.varchar("conditions", { length: 256 }).notNull(),
   weatherDesc: p.varchar("description", { length: 256 }).notNull(),
@@ -39,16 +39,16 @@ export const forecast = p.pgTable("forecast", {
   cityId: p
     .uuid("city_id")
     .references(() => city.id)
-    .notNull(), 
-  forecastDate: p.timestamp().notNull(),
+    .notNull(),
+  forecastDate: p.timestamp("forecast_date").notNull(),
   temperature: p.numeric({ mode: "number" }).notNull(),
-  windSpeed: p.numeric({ mode: "number" }).notNull(),
-  windDirection: p.numeric({ mode: "number" }).notNull(),
+  windSpeed: p.numeric("wind_speed", { mode: "number" }).notNull(),
+  windDirection: p.numeric("wind_direction", { mode: "number" }).notNull(),
   pressure: p.numeric({ mode: "number" }).notNull(),
   humidity: p.numeric({ mode: "number" }).notNull(),
   weatherMain: p.varchar("conditions", { length: 256 }).notNull(),
   weatherDesc: p.varchar("description", { length: 256 }).notNull(),
-  rainVolume: p.numeric({ mode: "number" }).notNull(),
+  rainVolume: p.numeric("rain_volume", { mode: "number" }).notNull(),
   probability: p.numeric({ mode: "number" }).notNull(),
 });
 
