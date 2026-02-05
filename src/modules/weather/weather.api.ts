@@ -77,8 +77,8 @@ export class Fetchweather {
     };
 
     // store in cache
-    await Cache.set(`get:currentweather:${data.name.toLowerCase()}`, 900, JSON.stringify(returnData));
-    await Cache.set(`get:city:${data.name.toLowerCase()}`, 900, JSON.stringify(returnData));
+    await Cache.set(`get:currentweather:${data.name.toLowerCase()}`, 900, JSON.stringify(returnData)); // 15mins ttl
+    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
 
     return returnData;
   }
@@ -142,8 +142,8 @@ export class Fetchweather {
     };
 
     // store in cache
-    await Cache.set(`get:forecast:${data.city.name.toLowerCase()}`, 3600, JSON.stringify(returnData));
-    await Cache.set(`get:city:${data.name.toLowerCase()}`, 900, JSON.stringify(returnData));
+    await Cache.set(`get:forecast:${data.city.name.toLowerCase()}`, 3600, JSON.stringify(returnData)); // 1hr ttl
+    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
 
     return returnData;
   }

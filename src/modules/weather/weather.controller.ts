@@ -4,7 +4,6 @@ import { Request, Response, NextFunction } from "express";
 import { Weatherservice } from "./weather.service.js";
 import { Weathercache } from "./weather.cache.js";
 import { Fetchweather } from "./weather.api.js";
-import { currentweather } from "./weather.schema.js";
 
 const Fetch = new Fetchweather();
 const Cache = new Weathercache();
