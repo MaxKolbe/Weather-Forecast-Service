@@ -169,4 +169,50 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
     return result[0];
   }
+
+  async updateCurrentWeather(
+    id: string,
+    args: Currentweather,
+  ): Promise<Currentweather | undefined> {
+    const result = await this.db
+      .update(currentweather)
+      .set({
+        timestamp: sql`TO_TIMESTAMP(${args.timestamp})`,
+        temperature: args.temperature,
+        humidity: args.humidity,
+        windSpeed: args.windSpeed,
+        windDirection: args.windDirection,
+        pressure: args.pressure,
+        weatherMain: args.weatherMain,
+        weatherDesc: args.weatherDesc,
+        sunrise: sql`TO_TIMESTAMP(${args.sunrise})`,
+        sunset: sql`TO_TIMESTAMP(${args.sunset})`,
+        lastUpdated: sql`NOW()`,
+      })
+      .where(eq(currentweather.id, id))
+      .returning();
+
+    return result[0];
+  }
+
+  async updateForecast(id: string, args: Forecast): Promise<Forecast | undefined> {
+    const result = await this.db
+      .update(forecast)
+      .set({
+        forecastDate: sql`TO_TIMESTAMP(${args.forecastDate})`,
+        temperature: args.temperature,
+        humidity: args.humidity,
+        windSpeed: args.windSpeed,
+        windDirection: args.windDirection,
+        pressure: args.pressure,
+        weatherMain: args.weatherMain,
+        weatherDesc: args.weatherDesc,
+        rainVolume: args.rainVolume,
+        probability: args.probability,
+      })
+      .where(eq(forecast.id, id))
+      .returning();
+
+      return result[0]
+  }
 }

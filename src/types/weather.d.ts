@@ -80,4 +80,6 @@ export interface WeatherService<T> {
   createCity(args: City): Promise<T | undefined>;
   createCurrentWeather(args: Currentweather): Promise<T | undefined>;
   createForecast(args: Forecast): Promise<T | undefined>;
+  updateCurrentWeather(id: string, args: Currentweather): Promise<T | undefined>;
+  updateForecast(id: string, args: Forecast): Promise<T | undefined>;
 }
