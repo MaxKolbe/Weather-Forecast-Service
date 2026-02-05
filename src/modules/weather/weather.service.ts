@@ -191,7 +191,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
         sunset: sql`TO_TIMESTAMP(${args.sunset})`,
         lastUpdated: sql`NOW()`,
       })
-      .where(eq(currentweather.id, id))
+      .where(eq(currentweather.cityId, id))
       .returning();
 
     return result[0];
@@ -212,24 +212,57 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
         rainVolume: args.rainVolume,
         probability: args.probability,
       })
-      .where(eq(forecast.id, id))
+      .where(eq(forecast.cityId, id))
       .returning();
 
     return result[0];
   }
 
-  async deleteCurrentWeather(id: string): Promise<Currentweather | undefined> {
+  async deleteCurrentWeather(id: string, cityName: string): Promise<Currentweather | undefined> {
     const result = await this.db
       .delete(currentweather)
-      .where(eq(currentweather.id, id))
+      .where(eq(currentweather.cityId, id))
       .returning();
-      //check for cache then del from cache
+
+    /*** */
+    //check for cache then del from cache
+    const [cache1, cache2] = await Promise.all([
+      Cache.get(`get:currentweather:${cityName}`),
+      Cache.get(`get:city:${cityName}`),
+    ]);
+
+    console.log(cache1, cache2);
+
+    if (cache1 !== undefined) {
+      Cache.del(`get:currentweather:${cityName}`);
+    }
+    if (cache2 !== undefined) {
+      Cache.del(`get:city:${cityName}`);
+    }
+    /*** */
     return result[0];
   }
 
-  async deleteForecast(id: string): Promise<Forecast | undefined> {
-    const result = await this.db.delete(forecast).where(eq(forecast.id, id)).returning();
+  async deleteForecast(id: string, cityName: string): Promise<Forecast | undefined> {
+    const result = await this.db.delete(forecast).where(eq(forecast.cityId, id)).returning();
+
+    /*** */
     //check for cache then del from cache
+    const [cache1, cache2] = await Promise.all([
+      Cache.get(`get:forecast:${cityName}`),
+      Cache.get(`get:city:${cityName}`),
+    ]);
+
+    console.log(cache1, cache2);
+
+    if (cache1 !== undefined) {
+      Cache.del(`get:forecast:${cityName}`);
+    }
+    if (cache2 !== undefined) {
+      Cache.del(`get:city:${cityName}`);
+    }
+    /*** */
+
     return result[0];
   }
 }

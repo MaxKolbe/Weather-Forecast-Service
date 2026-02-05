@@ -169,8 +169,9 @@ export class Fetchweather {
     }
 
     const data: any = await response.json();
+    const oldCity = await Weather.findCity(cityName)
 
-    await Weather.updateCurrentWeather("id-placeholder", {
+    await Weather.updateCurrentWeather(oldCity?.id!, {
       timestamp: data.dt,
       temperature: data.main.temp,
       humidity: data.main.humidity,
@@ -205,8 +206,9 @@ export class Fetchweather {
     }
 
     const data: any = await response.json();
+    const oldCity = await Weather.findCity(cityName)
 
-    await Weather.updateForecast("id-placeholder", {
+    await Weather.updateForecast(oldCity?.id!, {
       forecastDate: data.list[0].dt,
       temperature: data.list[0].main.temp,
       windSpeed: data.list[0].wind.speed,
