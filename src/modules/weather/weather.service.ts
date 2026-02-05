@@ -217,4 +217,19 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
     return result[0];
   }
+
+  async deleteCurrentWeather(id: string): Promise<Currentweather | undefined> {
+    const result = await this.db
+      .delete(currentweather)
+      .where(eq(currentweather.id, id))
+      .returning();
+      //check for cache then del from cache
+    return result[0];
+  }
+
+  async deleteForecast(id: string): Promise<Forecast | undefined> {
+    const result = await this.db.delete(forecast).where(eq(forecast.id, id)).returning();
+    //check for cache then del from cache
+    return result[0];
+  }
 }
