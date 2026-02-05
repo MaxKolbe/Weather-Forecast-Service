@@ -10,6 +10,8 @@ import {
   Returnforecast,
   JointWeatherService,
   WeatherService,
+  Updatecurrentweather,
+  Updateforecast,
 } from "../../types/weather.js";
 
 const Cache = new Weathercache();
@@ -172,7 +174,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
   async updateCurrentWeather(
     id: string,
-    args: Currentweather,
+    args: Updatecurrentweather,
   ): Promise<Currentweather | undefined> {
     const result = await this.db
       .update(currentweather)
@@ -195,7 +197,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result[0];
   }
 
-  async updateForecast(id: string, args: Forecast): Promise<Forecast | undefined> {
+  async updateForecast(id: string, args: Updateforecast): Promise<Forecast | undefined> {
     const result = await this.db
       .update(forecast)
       .set({
@@ -213,6 +215,6 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       .where(eq(forecast.id, id))
       .returning();
 
-      return result[0]
+    return result[0];
   }
 }

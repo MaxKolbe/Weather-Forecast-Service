@@ -74,12 +74,38 @@ export type JointWeatherService =
   | Currentweather
   | Forecast;
 
+export interface Updatecurrentweather {
+  timestamp: Date;
+  temperature: number;
+  humidity: number;
+  windSpeed: number;
+  windDirection: number;
+  pressure: number;
+  weatherMain: string;
+  weatherDesc: string;
+  sunrise: Date;
+  sunset: Date;
+}
+
+export interface Updateforecast {
+  forecastDate: Date;
+  temperature: number;
+  windSpeed: number;
+  windDirection: number;
+  pressure: number;
+  humidity: number;
+  weatherMain: string;
+  weatherDesc: string;
+  rainVolume: number;
+  probability: number;
+}
+
 export interface WeatherService<T> {
   getCurrentWeather(cityName: string): Promise<T | undefined>;
   getForecast(cityName: string): Promise<T | undefined>;
   createCity(args: City): Promise<T | undefined>;
   createCurrentWeather(args: Currentweather): Promise<T | undefined>;
   createForecast(args: Forecast): Promise<T | undefined>;
-  updateCurrentWeather(id: string, args: Currentweather): Promise<T | undefined>;
+  updateCurrentWeather(id: string, args: Updatecurrentweather): Promise<T | undefined>;
   updateForecast(id: string, args: Forecast): Promise<T | undefined>;
 }

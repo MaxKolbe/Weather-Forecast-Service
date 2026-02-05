@@ -77,12 +77,16 @@ export class Fetchweather {
     };
 
     // store in cache
-    await Cache.set(`get:currentweather:${data.name.toLowerCase()}`, 900, JSON.stringify(returnData)); // 15mins ttl
+    await Cache.set(
+      `get:currentweather:${data.name.toLowerCase()}`,
+      900,
+      JSON.stringify(returnData),
+    ); // 15mins ttl
     await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
 
     return returnData;
   }
- 
+
   async fetchForecast(cityName: string): Promise<Returnforecast | undefined> {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=metric`,
@@ -142,9 +146,85 @@ export class Fetchweather {
     };
 
     // store in cache
-    await Cache.set(`get:forecast:${data.city.name.toLowerCase()}`, 3600, JSON.stringify(returnData)); // 1hr ttl
+    await Cache.set(
+      `get:forecast:${data.city.name.toLowerCase()}`,
+      3600,
+      JSON.stringify(returnData),
+    ); // 1hr ttl
     await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
 
     return returnData;
+  }
+
+  async updateCurrentWeatherData(cityName: string): Promise<Boolean | undefined> {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`,
+    );
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return;
+      }
+      throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
+    }
+
+    const data: any = await response.json();
+
+    await Weather.updateCurrentWeather("id-placeholder", {
+      timestamp: data.dt,
+      temperature: data.main.temp,
+      humidity: data.main.humidity,
+      windSpeed: data.wind.speed,
+      windDirection: data.wind.deg,
+      pressure: data.main.pressure,
+      weatherMain: data.weather[0].main,
+      weatherDesc: data.weather[0].description,
+      sunrise: data.sys.sunrise,
+      sunset: data.sys.sunset,
+    });
+
+    // if cached delete
+    const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
+    if (cachedResult !== undefined) {
+      await Cache.del(`get:currentweather:${cityName}`);
+    }
+
+    return true;
+  }
+
+  async updateForecastData(cityName: string): Promise<Boolean | undefined> {
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=metric`,
+    );
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        return;
+      }
+      throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
+    }
+
+    const data: any = await response.json();
+
+    await Weather.updateForecast("id-placeholder", {
+      forecastDate: data.list[0].dt,
+      temperature: data.list[0].main.temp,
+      windSpeed: data.list[0].wind.speed,
+      windDirection: data.list[0].wind.deg,
+      pressure: data.list[0].main.pressure,
+      humidity: data.list[0].main.humidity,
+      weatherMain: data.list[0].weather[0].main,
+      weatherDesc: data.list[0].weather[0].description,
+      rainVolume: data.list[0].rain ? data["list"][0]["rain"]["3h"] : 0, // clap for me joor lol
+      probability: data.list[0].pop,
+    });
+
+    // if cached delete
+    const cachedResult = await Cache.get(`get:forecast:${cityName}`);
+    if (cachedResult !== undefined) {
+      await Cache.del(`get:forecast:${cityName}`);
+    }
+
+    return true;
   }
 }
