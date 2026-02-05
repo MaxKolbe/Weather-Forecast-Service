@@ -68,7 +68,6 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       .innerJoin(forecast, eq(forecast.cityId, city.id))
       .where(sql`${city.name} = ${cityName} AND ${forecast.forecastDate}::DATE = NOW()::DATE`);
 
-    console.log("THIS IS RESULT[0]", result[0])
     if (result[0] !== undefined) {
       const returnData = {
         city: result[0].city,
@@ -82,7 +81,6 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
           description: result[0].description,
         },
       };
-      console.log("RETURNDATA variable in database layer:", returnData);
 
       // increment city searchcount
       await this.db

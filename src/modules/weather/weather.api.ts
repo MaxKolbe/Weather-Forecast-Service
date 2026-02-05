@@ -31,19 +31,24 @@ export class Fetchweather {
 
     const data: any = await response.json();
 
-    /* is there already a city in the db with this name or not refer to previous commits to fix this bug*/
+    /* check for city created due to forecast query*/
+    const city = await Weather.findCity(cityName);
+    const newCityArr: string[] = [];
+    if (!city) {
+      const newCity = await Weather.createCity({
+        name: data.name,
+        country: data.sys.country,
+        latitude: data.coord.lat,
+        longitude: data.coord.lon,
+        searchCount: 1,
+      });
 
-    const newCity = await Weather.createCity({
-      name: data.name,
-      country: data.sys.country,
-      latitude: data.coord.lat,
-      longitude: data.coord.lon,
-      searchCount: 1,
-    });
+      newCityArr.push(newCity?.id!);
+    }
 
     // store in db
     await Weather.createCurrentWeather({
-      cityId: newCity!.id!,
+      cityId: city?.id ? city.id : newCityArr[0]!,
       timestamp: data.dt,
       temperature: data.main.temp,
       humidity: data.main.humidity,
@@ -57,8 +62,8 @@ export class Fetchweather {
     });
 
     const returnData: Returncurrentweather = {
-      city: newCity!.name,
-      country: newCity!.country,
+      city: data.name.toLowerCase(),
+      country: data.sys.country,
       timestamp: new Date(data.dt * 1000),
       temperature: data.main.temp,
       humidity: data.main.humidity,
@@ -72,11 +77,11 @@ export class Fetchweather {
     };
 
     // store in cache
-    await Cache.set(`get:currentweather:${newCity!.name}`, 900, JSON.stringify(returnData));
+    await Cache.set(`get:currentweather:${data.name.toLowerCase()}`, 900, JSON.stringify(returnData));
 
     return returnData;
   }
-
+ 
   async fetchForecast(cityName: string): Promise<Returnforecast | undefined> {
     const response = await fetch(
       `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=metric`,
@@ -85,25 +90,31 @@ export class Fetchweather {
     if (!response.ok) {
       if (response.status === 404) {
         return;
-      } 
+      }
       throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
     }
 
     const data: any = await response.json();
 
-    /* is there already a city in the db with this name or not refer to previous commits to fix this bug*/
+    /* check for city created due to currentweather query*/
+    const city = await Weather.findCity(cityName);
+    const newCityArr: string[] = [];
 
-    const newCity = await Weather.createCity({
-      name: data.city.name,
-      country: data.city.country,
-      latitude: data.city.coord.lat,
-      longitude: data.city.coord.lon,
-      searchCount: 1,
-    });
+    if (!city) {
+      const newCity = await Weather.createCity({
+        name: data.city.name,
+        country: data.city.country,
+        latitude: data.city.coord.lat,
+        longitude: data.city.coord.lon,
+        searchCount: 1,
+      });
+
+      newCityArr.push(newCity?.id!);
+    }
 
     // store in db
     await Weather.createForecast({
-      cityId: newCity!.id!,
+      cityId: city?.id ? city.id : newCityArr[0]!,
       forecastDate: data.list[0].dt,
       temperature: data.list[0].main.temp,
       windSpeed: data.list[0].wind.speed,
@@ -117,7 +128,7 @@ export class Fetchweather {
     });
 
     const returnData: Returnforecast = {
-      city: data.city.name,
+      city: data.city.name.toLowerCase(),
       country: data.city.country,
       forecast: {
         date: new Date(data.list[0].dt * 1000),
@@ -130,7 +141,7 @@ export class Fetchweather {
     };
 
     // store in cache
-    await Cache.set(`get:forecast:${newCity!.name}`, 3600, JSON.stringify(returnData));
+    await Cache.set(`get:forecast:${data.city.name.toLowerCase()}`, 3600, JSON.stringify(returnData));
 
     return returnData;
   }
