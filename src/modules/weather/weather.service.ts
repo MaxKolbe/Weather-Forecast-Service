@@ -49,7 +49,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
     if (result[0] !== undefined && cachedResult === undefined) {
       await Cache.set(`get:currentweather:${cityName}`, 900, JSON.stringify(result[0])); // 15mins ttl
-      await Cache.set(`get:city:${cityName}`, 86400, JSON.stringify(cityName)); // 24hrs ttl
+      await Cache.set(`get:city:${cityName}`, 86400, cityName); // 24hrs ttl
     }
 
     return result[0];
@@ -95,7 +95,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       const cachedResult = await Cache.get(`get:forecast:${cityName}`);
       if (result[0] !== undefined && cachedResult === undefined) {
         await Cache.set(`get:forecast:${cityName}`, 3600, JSON.stringify(result[0])); // 1hr ttl
-        await Cache.set(`get:city:${cityName}`, 86400, JSON.stringify(cityName)); // 24hrs ttl
+        await Cache.set(`get:city:${cityName}`, 86400, cityName); // 24hrs ttl
       }
 
       return returnData;

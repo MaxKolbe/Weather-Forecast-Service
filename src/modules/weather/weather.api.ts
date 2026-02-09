@@ -82,7 +82,7 @@ export class Fetchweather {
       900,
       JSON.stringify(returnData),
     ); // 15mins ttl
-    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
+    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, data.name.toLowerCase()); // 24hrs ttl
 
     return returnData;
   }
@@ -151,7 +151,7 @@ export class Fetchweather {
       3600,
       JSON.stringify(returnData),
     ); // 1hr ttl
-    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
+    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, data.city.name.toLowerCase()); // 24hrs ttl
 
     return returnData;
   }
