@@ -74,7 +74,8 @@ export type JointWeatherService =
   | Currentweather
   | Forecast;
 
-export interface Updatecurrentweather {
+export interface CurrentWeatherPatch {
+  cityId: string | undefined;
   timestamp: Date;
   temperature: number;
   humidity: number;
@@ -87,7 +88,10 @@ export interface Updatecurrentweather {
   sunset: Date;
 }
 
-export interface Updateforecast {
+export type CurrentWeatherPatches = currentWeatherPatch[];
+
+export interface ForecastPatch {
+  cityId: string | undefined;
   forecastDate: Date;
   temperature: number;
   windSpeed: number;
@@ -100,12 +104,18 @@ export interface Updateforecast {
   probability: number;
 }
 
+export type ForecastPatches = ForecastPatch[];
+
 export interface WeatherService<T> {
   getCurrentWeather(cityName: string): Promise<T | undefined>;
   getForecast(cityName: string): Promise<T | undefined>;
-  createCity(args: City): Promise<T | undefined>;
   createCurrentWeather(args: Currentweather): Promise<T | undefined>;
   createForecast(args: Forecast): Promise<T | undefined>;
-  updateCurrentWeather(id: string, args: Updatecurrentweather): Promise<T | undefined>;
-  updateForecast(id: string, args: Forecast): Promise<T | undefined>;
+  updateCurrentWeather(
+    currentWeatherPatches: CurrentWeatherPatches,
+  ): Promise<Currentweather[] | undefined>;
+  updateForecast(forecastPatches: ForecastPatches): Promise<Forecast[] | undefined>;
+  createCity(args: City): Promise<T | undefined>;
+  findCity(cityName: string): Promise<City | undefined>;
+  findCityIds(cityArray: string[]);
 }
