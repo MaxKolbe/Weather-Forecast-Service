@@ -166,10 +166,11 @@ export class Fetchweather {
 
     return returnData;
   }
-
+  
+  // inside scchedulecheck for true or undefined
   async updateCurrentWeatherData(): Promise<Boolean | undefined> {
     // GET CITYKEYS IN CACHE
-    const cityKeys = await Cache.getkeys("get:city");
+    const cityKeys = await Cache.getkeys("get:currentweather");
 
     // GET CITYS AND STORE IN cityArray ARRAY
     const cityCacheArr: string[] = [];
@@ -228,7 +229,7 @@ export class Fetchweather {
 
     const result = await Weather.updateCurrentWeather(currentWeatherPatches);
 
-    if (!result) {
+    if (result.length === 0) {
       return false;
     }
     console.log("RESULT:", result);
@@ -237,7 +238,7 @@ export class Fetchweather {
 
   async updateForecastData(): Promise<Boolean | undefined> {
     // GET CITYKEYS IN CACHE
-    const cityKeys = await Cache.getkeys("get:city");
+    const cityKeys = await Cache.getkeys("get:forecast");
 
     // GET CITYS AND STORE IN cityArray ARRAY
     const cityCacheArr: string[] = [];

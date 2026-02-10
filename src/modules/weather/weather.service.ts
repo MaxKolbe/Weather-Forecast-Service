@@ -151,7 +151,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
   async updateCurrentWeather(
     currentWeatherPatches: CurrentWeatherPatches,
-  ): Promise<Currentweather[] | undefined> {
+  ): Promise<Currentweather[]> {
     const sqlChunks1: SQL[] = [];
     const sqlChunks2: SQL[] = [];
     const sqlChunks3: SQL[] = [];
@@ -272,7 +272,8 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result;
   }
 
-  async updateForecast(forecastPatches: ForecastPatches): Promise<Forecast[] | undefined> {
+  async updateForecast(forecastPatches: ForecastPatches): Promise<Forecast[]> {
+    //*
     const sqlChunks1: SQL[] = [];
     const sqlChunks2: SQL[] = [];
     const sqlChunks3: SQL[] = [];
@@ -300,7 +301,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       sqlChunks1.push(
         sql`when ${forecast.cityId} = ${forecastPatch.cityId} then TO_TIMESTAMP(${forecastPatch.forecastDate})`,
       );
-      ids.push(forecastPatch.cityId);
+      ids.push(forecastPatch.cityId!);//** 
     }
     for (const forecastPatch of forecastPatches) {
       sqlChunks2.push(
@@ -375,70 +376,72 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     const result: any = await appdb
       .update(forecast)
       .set({
-       forecastDate: finalSql1,
-       temperature: finalSql2,
-       windSpeed: finalSql3,
-       windDirection: finalSql4,
-       pressure: finalSql5,
-       humidity: finalSql6,
-       weatherMain: finalSql7,
-       weatherDesc: finalSql8,
-       rainVolume: finalSql9,
-       probability: finalSql10
+        forecastDate: finalSql1,
+        temperature: finalSql2,
+        windSpeed: finalSql3,
+        windDirection: finalSql4,
+        pressure: finalSql5,
+        humidity: finalSql6,
+        weatherMain: finalSql7,
+        weatherDesc: finalSql8,
+        rainVolume: finalSql9,
+        probability: finalSql10,
       })
       .where(inArray(forecast.cityId, ids))
       .returning();
 
     return result;
   }
-/** */
-  async deleteCurrentWeather(id: string, cityName: string): Promise<Currentweather | undefined> {
+
+  async deleteCurrentWeather(cityNames: string[], ids: string[]): Promise<Currentweather[]> {
     const result = await this.db
       .delete(currentweather)
-      .where(eq(currentweather.cityId, id))
+      .where(inArray(currentweather.cityId, ids))
       .returning();
 
-    /*** */
     //check for cache then del from cache
-    const [cache1, cache2] = await Promise.all([
-      Cache.get(`get:currentweather:${cityName}`),
-      Cache.get(`get:city:${cityName}`),
-    ]);
+    for (var cityName of cityNames) {
+      const [cache1, cache2] = await Promise.all([
+        Cache.get(`get:currentweather:${cityName}`),
+        Cache.get(`get:city:${cityName}`),
+      ]);
 
-    console.log(cache1, cache2);
+      console.log(cache1, cache2);
 
-    if (cache1 !== undefined) {
-      Cache.del(`get:currentweather:${cityName}`);
+      if (cache1 !== undefined) {
+        Cache.del(`get:currentweather:${cityName}`);
+      }
+      if (cache2 !== undefined) {
+        Cache.del(`get:city:${cityName}`);
+      }
     }
-    if (cache2 !== undefined) {
-      Cache.del(`get:city:${cityName}`);
-    }
-    /*** */
-    return result[0];
+
+    return result;
   }
-  async deleteForecast(id: string, cityName: string): Promise<Forecast | undefined> {
-    const result = await this.db.delete(forecast).where(eq(forecast.cityId, id)).returning();
 
-    /*** */
+  async deleteForecast(cityNames: string[], ids: string[]): Promise<Forecast[]> {
+    const result = await this.db.delete(forecast).where(inArray(forecast.cityId, ids)).returning();
+
     //check for cache then del from cache
-    const [cache1, cache2] = await Promise.all([
-      Cache.get(`get:forecast:${cityName}`),
-      Cache.get(`get:city:${cityName}`),
-    ]);
+    for (var cityName of cityNames) {
+      const [cache1, cache2] = await Promise.all([
+        Cache.get(`get:forecast:${cityName}`),
+        Cache.get(`get:city:${cityName}`),
+      ]);
 
-    console.log(cache1, cache2);
+      console.log(cache1, cache2);
 
-    if (cache1 !== undefined) {
-      Cache.del(`get:forecast:${cityName}`);
+      if (cache1 !== undefined) {
+        Cache.del(`get:forecast:${cityName}`);
+      }
+      if (cache2 !== undefined) {
+        Cache.del(`get:city:${cityName}`);
+      }
     }
-    if (cache2 !== undefined) {
-      Cache.del(`get:city:${cityName}`);
-    }
-    /*** */
 
-    return result[0];
+    return result;
   }
-/** */
+  
   async createCity(args: City): Promise<City | undefined> {
     const result = await this.db
       .insert(city)
@@ -462,7 +465,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result[0];
   }
 
-  async findCityIds(cityArray: string[]) {
+  async findCityIds(cityArray: string[]): Promise<{id: string}[]> {
     const result = await appdb
       .select({ id: city.id })
       .from(city)
@@ -471,4 +474,4 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
     return result;
   }
-}
+}  

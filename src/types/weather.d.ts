@@ -106,16 +106,21 @@ export interface ForecastPatch {
 
 export type ForecastPatches = ForecastPatch[];
 
+export type JointWeatherService =
+  | City
+  | Returncurrentweather
+  | Returnforecast
+  | Currentweather
+  | Forecast
+
 export interface WeatherService<T> {
   getCurrentWeather(cityName: string): Promise<T | undefined>;
   getForecast(cityName: string): Promise<T | undefined>;
   createCurrentWeather(args: Currentweather): Promise<T | undefined>;
   createForecast(args: Forecast): Promise<T | undefined>;
-  updateCurrentWeather(
-    currentWeatherPatches: CurrentWeatherPatches,
-  ): Promise<Currentweather[] | undefined>;
-  updateForecast(forecastPatches: ForecastPatches): Promise<Forecast[] | undefined>;
+  updateCurrentWeather(currentWeatherPatches: CurrentWeatherPatches): Promise<T[]>;
+  updateForecast(forecastPatches: ForecastPatches): Promise<T[]>;
   createCity(args: City): Promise<T | undefined>;
-  findCity(cityName: string): Promise<City | undefined>;
-  findCityIds(cityArray: string[]);
+  findCity(cityName: string): Promise<T | undefined>;
+  findCityIds(cityArray: string[]): Promise<{id: string}[]>;
 }
