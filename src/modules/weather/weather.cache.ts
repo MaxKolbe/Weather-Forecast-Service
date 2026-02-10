@@ -31,4 +31,9 @@ export class Weathercache {
     await redisClient.del(key);
     return 200;
   }
+
+  async getkeys(key: string): Promise<string[] | undefined> {
+    const keys = await redisClient.keys(`${key}:*`);
+    return keys ? keys : undefined;
+  }
 }

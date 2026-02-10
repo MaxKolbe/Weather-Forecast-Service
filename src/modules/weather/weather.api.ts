@@ -4,7 +4,14 @@ import path from "path";
 import appdb from "../../configs/db.config.js";
 import { Weathercache } from "./weather.cache.js";
 import { Weatherservice } from "./weather.service.js";
-import { Returncurrentweather, Returnforecast } from "../../types/weather.js";
+import {
+  Returncurrentweather,
+  Returnforecast,
+  CurrentWeatherPatch,
+  CurrentWeatherPatches,
+  ForecastPatch,
+  ForecastPatches,
+} from "../../types/weather.js";
 
 dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -82,7 +89,7 @@ export class Fetchweather {
       900,
       JSON.stringify(returnData),
     ); // 15mins ttl
-    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
+    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, data.name.toLowerCase()); // 24hrs ttl
 
     return returnData;
   }
@@ -151,82 +158,173 @@ export class Fetchweather {
       3600,
       JSON.stringify(returnData),
     ); // 1hr ttl
-    await Cache.set(`get:city:${data.name.toLowerCase()}`, 86400, JSON.stringify(returnData)); // 24hrs ttl
+    await Cache.set(
+      `get:city:${data.city.name.toLowerCase()}`,
+      86400,
+      data.city.name.toLowerCase(),
+    ); // 24hrs ttl
 
     return returnData;
   }
 
-  async updateCurrentWeatherData(cityName: string): Promise<Boolean | undefined> {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`,
-    );
+  async updateCurrentWeatherData(): Promise<Boolean | undefined> {
+    // GET CITY KEYS IN CACHE
+    const cityKeys = await Cache.getkeys("get:city");
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return;
+    // GET CITY NAMES IN citykeys AND STORE IN cityKeyArray ARRAY
+    const cityKeyArray: string[] = [];
+    if (cityKeys !== undefined) {
+      for (let cityKey of cityKeys) {
+        const splitKeys = cityKey.split(":");
+        cityKeyArray.push(splitKeys[2]!);
       }
-      throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
+    }
+    console.log("cityKeyArray:", cityKeyArray);
+
+    // GET ONLY CITIES THAT ARE IN CURRENTWEATHER TABLE
+    const validCities = await Weather.getCurrentWeatherCitys(cityKeyArray);
+    console.log("validCities:", validCities);
+
+    // STORE VALID CITIES' NAMES IN validCityArray ARRAY
+    const validCityArray: string[] = [];
+    for (let validCity of validCities) {
+      validCityArray.push(validCity.cityName);
     }
 
-    const data: any = await response.json();
-    const oldCity = await Weather.findCity(cityName)
+    const cityArray: string[] = validCityArray.sort(); // SORTS CITIES ALPHABETICALLY
+    console.log("List of Cities to update:", cityArray);
 
-    await Weather.updateCurrentWeather(oldCity?.id!, {
-      timestamp: data.dt,
-      temperature: data.main.temp,
-      humidity: data.main.humidity,
-      windSpeed: data.wind.speed,
-      windDirection: data.wind.deg,
-      pressure: data.main.pressure,
-      weatherMain: data.weather[0].main,
-      weatherDesc: data.weather[0].description,
-      sunrise: data.sys.sunrise,
-      sunset: data.sys.sunset,
-    });
+    // GET ALL IDS FOR SAID CITYS
+    const cityIds = await Weather.findCityIds(cityArray);
+    console.log("City Ids:", cityIds);
 
-    // if cached delete
-    const cachedResult = await Cache.get(`get:currentweather:${cityName}`);
-    if (cachedResult !== undefined) {
-      await Cache.del(`get:currentweather:${cityName}`);
+    // FOR EACH CITY RETURN CURRENT WEATHER CONDITIONS AND STORE IN AN ARRAY
+    let i = 0;
+    const currentWeatherPatches: CurrentWeatherPatches = [];
+    for (let city of cityArray) {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`,
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return;
+        }
+        throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
+      }
+
+      const data: any = await response.json();
+      console.log("No. of city I'm fetching now:", i);
+      const input: CurrentWeatherPatch = {
+        cityId: cityIds[i++]?.id,
+        timestamp: data.dt,
+        temperature: data.main.temp,
+        humidity: data.main.humidity,
+        windSpeed: data.wind.speed,
+        windDirection: data.wind.deg,
+        pressure: data.main.pressure,
+        weatherMain: data.weather[0].main,
+        weatherDesc: data.weather[0].description,
+        sunrise: data.sys.sunrise,
+        sunset: data.sys.sunset,
+      };
+
+      currentWeatherPatches.push(input);
     }
 
+    console.log("Items to use as patches", currentWeatherPatches);
+
+    // UPDATE THE DB
+    if (currentWeatherPatches.length === 0) {
+      return;
+    }
+
+    const result = await Weather.updateCurrentWeather(currentWeatherPatches);
+
+    if (result.length === 0) {
+      return;
+    }
+    console.log("RESULT:", result);
     return true;
   }
 
-  async updateForecastData(cityName: string): Promise<Boolean | undefined> {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${API_KEY}&units=metric`,
-    );
+  async updateForecastData(): Promise<Boolean | undefined> {
+    // GET CITY KEYS IN CACHE
+    const cityKeys = await Cache.getkeys("get:city");
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        return;
+    // GET CITY NAMES IN citykeys AND STORE IN cityKeyArray ARRAY
+    const cityKeyArray: string[] = [];
+    if (cityKeys !== undefined) {
+      for (let cityKey of cityKeys) {
+        const splitKeys = cityKey.split(":");
+        cityKeyArray.push(splitKeys[2]!);
       }
-      throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
+    }
+    console.log("cityKeyArray:", cityKeyArray);
+
+    // GET ONLY CITIES THAT ARE IN FORECAST TABLE
+    const validCities = await Weather.getforecastCitys(cityKeyArray);
+    console.log("validCities:", validCities);
+
+    // STORE VALID CITIES' NAMES IN validCityArray ARRAY
+    const validCityArray: string[] = [];
+    for (let validCity of validCities) {
+      validCityArray.push(validCity.cityName);
     }
 
-    const data: any = await response.json();
-    const oldCity = await Weather.findCity(cityName)
+    const cityArray: string[] = validCityArray.sort(); // SORTS CITIES ALPHABETICALLY
+    console.log("List of Cities to update:", cityArray);
 
-    await Weather.updateForecast(oldCity?.id!, {
-      forecastDate: data.list[0].dt,
-      temperature: data.list[0].main.temp,
-      windSpeed: data.list[0].wind.speed,
-      windDirection: data.list[0].wind.deg,
-      pressure: data.list[0].main.pressure,
-      humidity: data.list[0].main.humidity,
-      weatherMain: data.list[0].weather[0].main,
-      weatherDesc: data.list[0].weather[0].description,
-      rainVolume: data.list[0].rain ? data["list"][0]["rain"]["3h"] : 0, // clap for me joor lol
-      probability: data.list[0].pop,
-    });
+    // GET ALL IDS FOR SAID CITYS
+    const cityIds = await Weather.findCityIds(cityArray);
+    console.log("City Ids:", cityIds);
 
-    // if cached delete
-    const cachedResult = await Cache.get(`get:forecast:${cityName}`);
-    if (cachedResult !== undefined) {
-      await Cache.del(`get:forecast:${cityName}`);
+    // FOR EACH CITY RETURN CURRENT FORECAST CONDITIONS AND STORE IN AN ARRAY
+    let i = 0;
+    const forecastPatches: ForecastPatches = [];
+    for (let city of cityArray) {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`,
+      );
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return;
+        }
+        throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
+      }
+
+      const data: any = await response.json();
+      console.log("No. of city I'm fetching now:", i);
+      const input: ForecastPatch = {
+        cityId: cityIds[i++]?.id,
+        forecastDate: data.list[0].dt,
+        temperature: data.list[0].main.temp,
+        windSpeed: data.list[0].wind.speed,
+        windDirection: data.list[0].wind.deg,
+        pressure: data.list[0].main.pressure,
+        humidity: data.list[0].main.humidity,
+        weatherMain: data.list[0].weather[0].main,
+        weatherDesc: data.list[0].weather[0].description,
+        rainVolume: data.list[0].rain ? data["list"][0]["rain"]["3h"] : 0, // clap for me joor lol
+        probability: data.list[0].pop,
+      };
+
+      forecastPatches.push(input);
+    }
+    console.log("Items to use as patches", forecastPatches);
+
+    // UPDATE THE DB
+    if (forecastPatches.length === 0) {
+      return;
     }
 
+    const result = await Weather.updateForecast(forecastPatches);
+
+    if (!result) {
+      return;
+    }
+    console.log("RESULT:", result);
     return true;
   }
 }

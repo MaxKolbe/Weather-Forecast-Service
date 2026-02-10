@@ -20,12 +20,13 @@ export const currentweather = p.pgTable("currentweather", {
   cityId: p
     .uuid("city_id")
     .references(() => city.id)
-    .notNull(),
+    .notNull()
+    .unique(),
   timestamp: p.timestamp().notNull(),
   temperature: p.numeric({ mode: "number" }).notNull(),
   humidity: p.integer().notNull(),
   windSpeed: p.numeric("wind_speed", { mode: "number" }).notNull(),
-  windDirection: p.numeric("wind_direction",{ mode: "number" }).notNull(),
+  windDirection: p.numeric("wind_direction", { mode: "number" }).notNull(),
   pressure: p.numeric({ mode: "number" }).notNull(),
   weatherMain: p.varchar("conditions", { length: 256 }).notNull(),
   weatherDesc: p.varchar("description", { length: 256 }).notNull(),
