@@ -167,7 +167,6 @@ export class Fetchweather {
     return returnData;
   }
 
-  // inside schedule check for true or undefined
   async updateCurrentWeatherData(): Promise<Boolean | undefined> {
     // GET CITY KEYS IN CACHE
     const cityKeys = await Cache.getkeys("get:city");

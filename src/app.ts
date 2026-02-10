@@ -3,6 +3,7 @@ import express from "express";
 import errorHandler from "./middleware/errorHandler.js";
 import weatherRoute from "./modules/weather/weather.routes.js";
 import { connectRedis } from "./configs/cache.config.js";
+import { updateCurrentWeatherCron } from "./modules/weather/weather.cron.js";
 
 const app = express();
 
@@ -14,21 +15,9 @@ app.set("views", "views");
 app.set("view-engine", "ejs");
 
 connectRedis();
+updateCurrentWeatherCron();
 
 app.use("/api/weather", weatherRoute);
-
-/************************TEST ROUTE************************************/
-import { Request, Response } from "express";
-import { Fetchweather } from "./modules/weather/weather.api.js";
-
-const Fetch = new Fetchweather()
-
-app.get("/test", async (req: Request, res: Response) => {
-  // console.log("ROUTE /TEST2 RESULT:", await Fetch.updateCurrentWeatherData())
-  // console.log("ROUTE /TEST2 RESULT:", await Fetch.updateForecastData())
-}); 
-
-/************************TEST ROUTE************************************/
 
 app.use(errorHandler);
 
