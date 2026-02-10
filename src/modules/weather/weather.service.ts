@@ -301,7 +301,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       sqlChunks1.push(
         sql`when ${forecast.cityId} = ${forecastPatch.cityId} then TO_TIMESTAMP(${forecastPatch.forecastDate})`,
       );
-      ids.push(forecastPatch.cityId!);//** 
+      ids.push(forecastPatch.cityId!); //**
     }
     for (const forecastPatch of forecastPatches) {
       sqlChunks2.push(
@@ -441,7 +441,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
     return result;
   }
-  
+
   async createCity(args: City): Promise<City | undefined> {
     const result = await this.db
       .insert(city)
@@ -465,7 +465,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result[0];
   }
 
-  async findCityIds(cityArray: string[]): Promise<{id: string}[]> {
+  async findCityIds(cityArray: string[]): Promise<{ id: string }[]> {
     const result = await appdb
       .select({ id: city.id })
       .from(city)
@@ -474,4 +474,24 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
     return result;
   }
-}  
+
+  async getCurrentWeatherCitys(cityNames: string[]): Promise<{ cityName: string }[]> {
+    const result = await this.db
+      .select({cityName: city.name})
+      .from(city)
+      .innerJoin(currentweather, eq(currentweather.cityId, city.id))
+      .where(inArray(city.name, cityNames));
+
+    return result;
+  }
+
+  async getforecastCitys(cityNames: string[]): Promise<{ cityName: string }[]> {
+    const result = await this.db
+      .select({cityName: city.name})
+      .from(city)
+      .innerJoin(forecast, eq(forecast.cityId, city.id))
+      .where(inArray(city.name, cityNames));
+
+    return result;
+  }
+}

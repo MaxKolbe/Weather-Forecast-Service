@@ -166,21 +166,33 @@ export class Fetchweather {
 
     return returnData;
   }
-  
-  // inside scchedulecheck for true or undefined
-  async updateCurrentWeatherData(): Promise<Boolean | undefined> {
-    // GET CITYKEYS IN CACHE
-    const cityKeys = await Cache.getkeys("get:currentweather");
 
-    // GET CITYS AND STORE IN cityArray ARRAY
-    const cityCacheArr: string[] = [];
+  // inside schedule check for true or undefined
+  async updateCurrentWeatherData(): Promise<Boolean | undefined> {
+    // GET CITY KEYS IN CACHE
+    const cityKeys = await Cache.getkeys("get:city");
+
+    // GET CITY NAMES IN citykeys AND STORE IN cityKeyArray ARRAY
+    const cityKeyArray: string[] = [];
     if (cityKeys !== undefined) {
-      for (var cityKey of cityKeys) {
+      for (let cityKey of cityKeys) {
         const splitKeys = cityKey.split(":");
-        cityCacheArr.push(splitKeys[2]!);
+        cityKeyArray.push(splitKeys[2]!);
       }
     }
-    const cityArray = cityCacheArr.sort(); // SORT CITIES ALPHABETICALLY
+    console.log("cityKeyArray:", cityKeyArray);
+
+    // GET ONLY CITIES THAT ARE IN CURRENTWEATHER TABLE
+    const validCities = await Weather.getCurrentWeatherCitys(cityKeyArray);
+    console.log("validCities:", validCities);
+
+    // STORE VALID CITIES' NAMES IN validCityArray ARRAY
+    const validCityArray: string[] = [];
+    for (let validCity of validCities) {
+      validCityArray.push(validCity.cityName);
+    }
+
+    const cityArray: string[] = validCityArray.sort(); // SORTS CITIES ALPHABETICALLY
     console.log("List of Cities to update:", cityArray);
 
     // GET ALL IDS FOR SAID CITYS
@@ -190,7 +202,7 @@ export class Fetchweather {
     // FOR EACH CITY RETURN CURRENT WEATHER CONDITIONS AND STORE IN AN ARRAY
     let i = 0;
     const currentWeatherPatches: CurrentWeatherPatches = [];
-    for (var city of cityArray) {
+    for (let city of cityArray) {
       const response = await fetch(
         `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`,
       );
@@ -220,6 +232,7 @@ export class Fetchweather {
 
       currentWeatherPatches.push(input);
     }
+
     console.log("Items to use as patches", currentWeatherPatches);
 
     // UPDATE THE DB
@@ -230,25 +243,37 @@ export class Fetchweather {
     const result = await Weather.updateCurrentWeather(currentWeatherPatches);
 
     if (result.length === 0) {
-      return false;
+      return;
     }
     console.log("RESULT:", result);
     return true;
   }
 
   async updateForecastData(): Promise<Boolean | undefined> {
-    // GET CITYKEYS IN CACHE
-    const cityKeys = await Cache.getkeys("get:forecast");
+    // GET CITY KEYS IN CACHE
+    const cityKeys = await Cache.getkeys("get:city");
 
-    // GET CITYS AND STORE IN cityArray ARRAY
-    const cityCacheArr: string[] = [];
+    // GET CITY NAMES IN citykeys AND STORE IN cityKeyArray ARRAY
+    const cityKeyArray: string[] = [];
     if (cityKeys !== undefined) {
-      for (var cityKey of cityKeys) {
+      for (let cityKey of cityKeys) {
         const splitKeys = cityKey.split(":");
-        cityCacheArr.push(splitKeys[2]!);
+        cityKeyArray.push(splitKeys[2]!);
       }
     }
-    const cityArray = cityCacheArr.sort(); // SORT CITIES ALPHABETICALLY
+    console.log("cityKeyArray:", cityKeyArray);
+
+    // GET ONLY CITIES THAT ARE IN FORECAST TABLE
+    const validCities = await Weather.getforecastCitys(cityKeyArray);
+    console.log("validCities:", validCities);
+
+    // STORE VALID CITIES' NAMES IN validCityArray ARRAY
+    const validCityArray: string[] = [];
+    for (let validCity of validCities) {
+      validCityArray.push(validCity.cityName);
+    }
+
+    const cityArray: string[] = validCityArray.sort(); // SORTS CITIES ALPHABETICALLY
     console.log("List of Cities to update:", cityArray);
 
     // GET ALL IDS FOR SAID CITYS
@@ -258,7 +283,7 @@ export class Fetchweather {
     // FOR EACH CITY RETURN CURRENT FORECAST CONDITIONS AND STORE IN AN ARRAY
     let i = 0;
     const forecastPatches: ForecastPatches = [];
-    for (var city of cityArray) {
+    for (let city of cityArray) {
       const response = await fetch(
         `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${API_KEY}&units=metric`,
       );
@@ -298,7 +323,7 @@ export class Fetchweather {
     const result = await Weather.updateForecast(forecastPatches);
 
     if (!result) {
-      return false;
+      return;
     }
     console.log("RESULT:", result);
     return true;

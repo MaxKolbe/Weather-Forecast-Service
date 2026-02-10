@@ -24,7 +24,8 @@ import { Fetchweather } from "./modules/weather/weather.api.js";
 const Fetch = new Fetchweather()
 
 app.get("/test", async (req: Request, res: Response) => {
-  console.log("ROUTE /TEST2 RESULT:", await Fetch.updateCurrentWeatherData())
+  // console.log("ROUTE /TEST2 RESULT:", await Fetch.updateCurrentWeatherData())
+  // console.log("ROUTE /TEST2 RESULT:", await Fetch.updateForecastData())
 }); 
 
 /************************TEST ROUTE************************************/
