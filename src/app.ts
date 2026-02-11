@@ -3,7 +3,7 @@ import express from "express";
 import errorHandler from "./middleware/errorHandler.js";
 import weatherRoute from "./modules/weather/weather.routes.js";
 import { connectRedis } from "./configs/cache.config.js";
-import { updateCurrentWeatherCron } from "./modules/weather/weather.cron.js";
+import { updateCurrentWeatherCron, updateForecastCron } from "./modules/weather/weather.cron.js";
 
 const app = express();
 
@@ -16,6 +16,7 @@ app.set("view-engine", "ejs");
 
 connectRedis();
 updateCurrentWeatherCron();
+updateForecastCron();
 
 app.use("/api/weather", weatherRoute);
 

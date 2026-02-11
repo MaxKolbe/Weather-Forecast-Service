@@ -393,51 +393,22 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result;
   }
 
-  async deleteCurrentWeather(cityNames: string[], ids: string[]): Promise<Currentweather[]> {
+  async getCurrentWeatherCitys(cityNames: string[]): Promise<{ cityName: string }[]> {
     const result = await this.db
-      .delete(currentweather)
-      .where(inArray(currentweather.cityId, ids))
-      .returning();
-
-    //check for cache then del from cache
-    for (var cityName of cityNames) {
-      const [cache1, cache2] = await Promise.all([
-        Cache.get(`get:currentweather:${cityName}`),
-        Cache.get(`get:city:${cityName}`),
-      ]);
-
-      console.log(cache1, cache2);
-
-      if (cache1 !== undefined) {
-        Cache.del(`get:currentweather:${cityName}`);
-      }
-      if (cache2 !== undefined) {
-        Cache.del(`get:city:${cityName}`);
-      }
-    }
+      .select({ cityName: city.name })
+      .from(city)
+      .innerJoin(currentweather, eq(currentweather.cityId, city.id))
+      .where(inArray(city.name, cityNames));
 
     return result;
   }
 
-  async deleteForecast(cityNames: string[], ids: string[]): Promise<Forecast[]> {
-    const result = await this.db.delete(forecast).where(inArray(forecast.cityId, ids)).returning();
-
-    //check for cache then del from cache
-    for (var cityName of cityNames) {
-      const [cache1, cache2] = await Promise.all([
-        Cache.get(`get:forecast:${cityName}`),
-        Cache.get(`get:city:${cityName}`),
-      ]);
-
-      console.log(cache1, cache2);
-
-      if (cache1 !== undefined) {
-        Cache.del(`get:forecast:${cityName}`);
-      }
-      if (cache2 !== undefined) {
-        Cache.del(`get:city:${cityName}`);
-      }
-    }
+  async getforecastCitys(cityNames: string[]): Promise<{ cityName: string }[]> {
+    const result = await this.db
+      .select({ cityName: city.name })
+      .from(city)
+      .innerJoin(forecast, eq(forecast.cityId, city.id))
+      .where(inArray(city.name, cityNames));
 
     return result;
   }
@@ -475,23 +446,58 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result;
   }
 
-  async getCurrentWeatherCitys(cityNames: string[]): Promise<{ cityName: string }[]> {
+  /**
+  // IMPLEMENT DELETE FUNCTIONS AT A LATER DATE
+  async deleteDistinctCurrentWeather(
+    cityNames: string[],
+    ids: string[],
+  ): Promise<Currentweather[]> {
     const result = await this.db
-      .select({cityName: city.name})
-      .from(city)
-      .innerJoin(currentweather, eq(currentweather.cityId, city.id))
-      .where(inArray(city.name, cityNames));
+      .delete(currentweather)
+      .where(inArray(currentweather.cityId, ids))
+      .returning();
+
+    //check for cache then del from cache
+    for (var cityName of cityNames) {
+      const [cache1, cache2] = await Promise.all([
+        Cache.get(`get:currentweather:${cityName}`),
+        Cache.get(`get:city:${cityName}`),
+      ]);
+
+      console.log(cache1, cache2);
+
+      if (cache1 !== undefined) {
+        Cache.del(`get:currentweather:${cityName}`);
+      }
+      if (cache2 !== undefined) {
+        Cache.del(`get:city:${cityName}`);
+      }
+    }
 
     return result;
   }
 
-  async getforecastCitys(cityNames: string[]): Promise<{ cityName: string }[]> {
-    const result = await this.db
-      .select({cityName: city.name})
-      .from(city)
-      .innerJoin(forecast, eq(forecast.cityId, city.id))
-      .where(inArray(city.name, cityNames));
+  async deleteDistinctForecast(cityNames: string[], ids: string[]): Promise<Forecast[]> {
+    const result = await this.db.delete(forecast).where(inArray(forecast.cityId, ids)).returning();
+
+    //check for cache then del from cache
+    for (var cityName of cityNames) {
+      const [cache1, cache2] = await Promise.all([
+        Cache.get(`get:forecast:${cityName}`),
+        Cache.get(`get:city:${cityName}`),
+      ]);
+
+      console.log(cache1, cache2);
+
+      if (cache1 !== undefined) {
+        Cache.del(`get:forecast:${cityName}`);
+      }
+      if (cache2 !== undefined) {
+        Cache.del(`get:city:${cityName}`);
+      }
+    }
 
     return result;
   }
+**/
 }
