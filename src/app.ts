@@ -15,8 +15,8 @@ app.set("views", "views");
 app.set("view-engine", "ejs");
 
 connectRedis();
-// updateCurrentWeatherCron();
-// updateForecastCron();
+updateCurrentWeatherCron();
+updateForecastCron();
 
 app.use("/api/weather", weatherRoute);
 

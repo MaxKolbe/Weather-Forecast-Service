@@ -20,8 +20,8 @@ export const updateCurrentWeatherCron = () => {
 };
 
 export const updateForecastCron = () => {
-  // runs every two hours
-  schedule.scheduleJob("0 */2 * * *", async () => {
+  // runs every three hours
+  schedule.scheduleJob("0 */3 * * *", async () => {
     // console.log("Running updateForecastCron function...");
     try {
       const taskState = await Fetch.updateForecastData();
