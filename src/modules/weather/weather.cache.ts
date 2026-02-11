@@ -36,4 +36,23 @@ export class Weathercache {
     const keys = await redisClient.keys(`${key}:*`);
     return keys ? keys : undefined;
   }
+
+  /**
+  // IMPLEMENT DELETE CACHE KEY PATTERNS FUNCTION AT A LATER DATE 
+  async delPattern(pattern: string): Promise<string[] | undefined> {
+    try {
+      const keys = await redisClient.keys(pattern);
+
+      if (keys.length > 0) {
+        await redisClient.del(keys);
+      }
+
+      return keys;
+    } catch (err) {
+      if (err instanceof Error) {
+        console.error("[Cache Error - delPattern]:", err.message);
+      }
+    }
+  }
+*/
 }
