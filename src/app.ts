@@ -11,8 +11,8 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.set("views", "views");
-app.set("view-engine", "ejs");
+app.set("views", "views"); 
+app.set("view engine", "ejs");
 
 connectRedis();
 updateCurrentWeatherCron();
