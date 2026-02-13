@@ -1,11 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/output.css" />
+    <title>Weather Info | Weather Service</title>
+  </head>
+  <body class="bg-white text-text min-h-screen flex flex-col">
+  <!-- Container -->
+    <div class="max-w-7xl mx-auto px-6 py-10 w-full flex-1">
+
+        <!-- Search Bar -->
+        <div class="w-full mb-10">
+        <form method="POST" action="/api/weather/weather" class="flex gap-4">
+            <input type="text" name="city" placeholder="Search for a location" class="flex-1 px-4 py-3 border border-border rounded-xl outline-none focus:ring-1 focus:ring-border"/>
+            <button type="submit" class="px-6 py-3 border border-border rounded-xl hover:cursor-pointer"> Search </button>
+        </form>
+        </div>
+
+        <div class="border border-border rounded-2xl p-6">
+            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= currentweather.city.toUpperCase() %></span></h2>
+            <div class="space-y-2 text-sm">
+            <p><strong>Temperature:</strong> <%= currentweather.temperature %>°C</p>
+            <p><strong>Humidity:</strong> <%= currentweather.humidity %>%</p>
+            <p><strong>Wind Speed:</strong> <%= currentweather.windSpeed %>m/s</p>
+            <p><strong>Weather Conditions:</strong> <%= currentweather.conditions %></p>
+            <p><strong>Pressure:</strong> <%= currentweather.pressure %>hPa</p>
+            <p><strong>Sunrise:</strong> <%= new Date(currentweather.sunrise).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+            <p><strong>Sunset:</strong> <%= new Date(currentweather.sunrise).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+            </div>
+        </div>
+        <% if (forecast.forecast) { %>
+            <div class="border border-border rounded-2xl p-6">
+                <h2 class="text-md font-semibold mb-4">Basic 1-day forecast for: <span class="text-border"><%= currentweather.city.toUpperCase() %></span></h2>
+                <div class="space-y-2 text-sm">
+                <p><strong>Date:</strong> <%= new Date(forecast.forecast.date).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+                <p><strong>Temperature:</strong> <%= forecast.forecast.temperature %>°C</p>
+                <p><strong>Humidity:</strong> <%= forecast.forecast.humidity %>%</p>
+                <p><strong>Wind Speed:</strong> <%= forecast.forecast.windSpeed %>m/s</p>
+                <p><strong>Weather Conditions:</strong> <%= forecast.forecast.conditions %></p>
+                <p><strong>Weather Description:</strong> <%= forecast.forecast.description %></p>
+                </div>
+            </div>
+        <% } else { %>
+                <div class="border border-border rounded-2xl p-6">
+                <h2 class="text-md font-semibold mb-4">Basic 1-day forecast for: <span class="text-border"><%= currentweather.city.toUpperCase() %></span></h2>
+                <div class="space-y-2 text-sm">
+                <p><strong>Date:</strong> <%= new Date(forecast.date).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+                <p><strong>Temperature:</strong> <%= forecast.temperature %>°C</p>
+                <p><strong>Humidity:</strong> <%= forecast.humidity %>%</p>
+                <p><strong>Wind Speed:</strong> <%= forecast.windSpeed %>m/s</p>
+                <p><strong>Weather Conditions:</strong> <%= forecast.conditions %></p>
+                <p><strong>Weather Description:</strong> <%= forecast.description %></p>
+                </div>
+            </div>
+        <% } %>
+
+    </div>
+  </body>
 </html>
+

@@ -4,6 +4,10 @@ import { sql } from "drizzle-orm";
 import { city } from "./weather.schema.js";
 import { JointWeatherService } from "../../types/weather.js";
 
+function isStringArray(arr: any[]): arr is string[] {
+  return Array.isArray(arr) && arr.every((element) => typeof element === "string");
+}
+
 export class Weathercache {
   constructor() {}
 
@@ -22,6 +26,18 @@ export class Weathercache {
     return data ? JSON.parse(data) : undefined;
   }
 
+  async getall(key: string): Promise<string[] | undefined> {
+    const keys = await redisClient.keys(`${key}:*`);
+
+    if (keys.length === 0) {
+      return;
+    }
+
+    const values = await redisClient.mGet(keys);
+    // console.log("JSON arr", values);
+    return isStringArray(values) ? values : undefined;
+  }
+
   async set(key: string, ttl: number, value: string): Promise<number | undefined> {
     await redisClient.setEx(key, ttl, value);
     return 201;
@@ -36,7 +52,6 @@ export class Weathercache {
     const keys = await redisClient.keys(`${key}:*`);
     return keys ? keys : undefined;
   }
-
   /**
   // IMPLEMENT DELETE CACHE KEY PATTERNS FUNCTION AT A LATER DATE 
   async delPattern(pattern: string): Promise<string[] | undefined> {

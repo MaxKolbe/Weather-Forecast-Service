@@ -6,18 +6,45 @@
     <link rel="stylesheet" href="/output.css" />
     <title>Home | Weather Service</title>
   </head>
-  <body>
-    <h1 class="text-2xl font-bold">Hello world!</h1>
-    <div
-      class="mx-auto flex max-w-sm items-center gap-x-4 rounded-xl bg-white p-6 shadow-lg outline outline-black/5 dark:bg-slate-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
-    >
-      <img class="size-12 shrink-0" src="/img/logo.svg" alt="ChitChat Logo" />
-      <div>
-        <div class="teext-start-xl font-medium text-black dark:text-white">ChitChat</div>
-        <div class="teext-start-xl font-medium text-black dark:text-white">ChitChat</div>
-        <div class="teext-start-xl font-medium text-black dark:text-white">ChitChat</div>
-        <p class="text-gray-500 dark:text-gray-400">You have a new message!</p>
-      </div>
+  <body class="bg-white text-text min-h-screen flex flex-col">
+  <!-- Container -->
+  <div class="max-w-7xl mx-auto px-6 py-10 w-full flex-1">
+
+    <!-- Search Bar -->
+    <div class="w-full mb-10">
+      <form class="flex gap-4" action="/api/weather/weather" method="POST">
+        <input type="text" name="city" placeholder="Search for a location" class="flex-1 px-4 py-3 border border-border rounded-xl outline-none focus:ring-1 focus:ring-border"/>
+        <button type="submit" class="px-6 py-3 border border-border rounded-xl hover:cursor-pointer"> Search </button>
+      </form>
     </div>
+
+    <!-- Cards Grid -->
+    <p class="text-text text-lg my-2.5 font-bold">Popular Searches:</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Example Card (You will loop this) -->
+       <% if(weatherData !== false) {%>
+        <%  weatherData.forEach(weather => {  %>
+        <div class="border border-border rounded-2xl p-6">
+            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= weather.city.toUpperCase() %></span></h2>
+            <div class="space-y-2 text-sm">
+            <p><strong>Temperature:</strong> <%= weather.temperature %>°C</p>
+            <p><strong>Humidity:</strong> <%= weather.humidity %>%</p>
+            <p><strong>Wind Speed:</strong> <%= weather.windSpeed %>m/s</p>
+            <p><strong>Weather Conditions:</strong> <%= weather.conditions %></p>
+            <p><strong>Pressure:</strong> <%= weather.pressure %>hPa</p>
+            <p><strong>Sunrise:</strong> <%= new Date(weather.sunrise).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+            <p><strong>Sunset:</strong> <%= new Date(weather.sunrise).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+            </div>
+        </div>
+        <%  })  %>
+       <%}%>
+    </div>
+
+    <!-- Load More Button -->
+    <div class="mt-12 flex justify-center">
+    
+       <a href="http://<%= req.headers.host%><%= req.baseUrl%>/home?limit=<%= limit + 1%>" class="px-8 py-3 border border-border rounded-xl hover:cursor-pointer">Load More</a>
+    </div>
+  </div>
   </body>
 </html>

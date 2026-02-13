@@ -7,7 +7,7 @@ import { Fetchweather } from "./weather.api.js";
 
 const Fetch = new Fetchweather();
 const Cache = new Weathercache();
-const Weather = new Weatherservice(appdb);
+export const Weather = new Weatherservice(appdb);
 
 export const getCurrentWeather = async (req: Request, res: Response, next: NextFunction) => {
   const city = req.query.city?.toString().toLowerCase();
@@ -87,9 +87,58 @@ export const getWeatherForecast = async (req: Request, res: Response, next: Next
 
 /* DASHBOARD CONTROLLERS */
 export const getVisitorDashboard = async (req: Request, res: Response, next: NextFunction) => {
-  return res.render("home");
+  const limit = req.query.limit ? Number(req.query.limit) : 1; // Will implement better pagination
+  const breakoutNumnber = limit * 6;
+  // console.log("Limit", limit);
+
+  try {
+    // Check cache
+    console.log("CHECKING CACHE");
+    const current_weather = await Cache.getall(`get:currentweather`);
+    if (current_weather) {
+      let i = 0;
+      const currentweatherArray = [];
+      for (let w of current_weather) {
+        if (i === breakoutNumnber) {
+          break;
+        }
+        i++;
+        currentweatherArray.push(JSON.parse(w));
+      }
+
+      console.log(req.headers.host, req.baseUrl);
+      return res.render("home", { req, weatherData: currentweatherArray, limit });
+    }
+
+    return res.render("home", { req, weatherData: false, limit });
+  } catch (err) {
+    next(err);
+  }
 };
 
+export const weatherDetails = async (req: Request, res: Response, next: NextFunction) => {
+  const city = req.body.city?.toString().toLowerCase().trim();
+  console.log("Search Query:", city);
+
+  if (city === undefined) {
+    // responseHandler("Please input a city", res, 400);
+    return res.status(400).redirect(`/home?message=Please+input+a+city`);
+  }
+  
+  try {
+    const [currentweather, forecast] = await Promise.all([
+      Weather.getCurrentWeatherBundle(city), 
+      Weather.getForecastBundle(city),
+    ]);
+    console.log("Forecast", forecast)
+
+    return res.render("weather", {req, currentweather, forecast})
+  } catch (err) {
+    next(err)
+  }
+};
+
+/** */
 export const getClientCurrentWeather = async (req: Request, res: Response, next: NextFunction) => {
   const city = req.query.city?.toString().toLowerCase();
 
@@ -163,8 +212,11 @@ export const getClientWeatherForecast = async (req: Request, res: Response, next
       return res.render("weather.html", { req, forecast: c_forecast });
     }
 
-    return res.status(404).redirect(`/home?message=Could+not+find+the+Weather+Forecast+for+city:+${city}`);
+    return res
+      .status(404)
+      .redirect(`/home?message=Could+not+find+the+Weather+Forecast+for+city:+${city}`);
   } catch (err) {
     next(err);
   }
 };
+/** */

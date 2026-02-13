@@ -1,6 +1,7 @@
 import appdb from "../../configs/db.config.js";
 import { SQL, sql, eq, asc, inArray } from "drizzle-orm";
 import { Weathercache } from "./weather.cache.js";
+import { Fetchweather } from "./weather.api.js";
 import { city, currentweather, forecast } from "./weather.schema.js";
 import {
   City,
@@ -15,6 +16,7 @@ import {
 } from "../../types/weather.js";
 
 const Cache = new Weathercache();
+const Fetch = new Fetchweather();
 
 export class Weatherservice implements WeatherService<JointWeatherService> {
   constructor(private readonly db = appdb) {}
@@ -446,6 +448,60 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     return result;
   }
 
+  async getCurrentWeatherBundle(city: string) /*: Promise<Currentweather | undefined>*/ {
+    // Check cache
+    console.log("CHECKING CACHE");
+    const a_current_weather = await Cache.get(`get:currentweather:${city}`);
+    if (a_current_weather) {
+      console.log(`FOUND SOMETHING IN CACHE`);
+      return a_current_weather;
+    }
+
+    // Check db
+    console.log("CHECKING DATABASE");
+    const b_current_weather = await this.getCurrentWeather(city!);
+    if (b_current_weather) {
+      console.log(`FOUND SOMETHING IN DATABASE`);
+      return b_current_weather;
+    }
+
+    // fetch from api
+    console.log("CHECKING API");
+    const c_current_weather = await Fetch.fetchCurrentWeather(city!);
+    if (c_current_weather) {
+      console.log(`FOUND SOMETHING IN API`);
+      return c_current_weather;
+    }
+
+    return undefined;
+  }
+  async getForecastBundle(city: string) /*: Promise<Forecast | undefined>*/ {
+    // Check cache
+    console.log("CHECKING CACHE");
+    const a_forecast = await Cache.get(`get:forecast:${city}`);
+    if (a_forecast) {
+      console.log(`FOUND SOMETHING IN CACHE`);
+      return a_forecast;
+    }
+
+    // Check db
+    console.log("CHECKING DATABASE");
+    const b_forecast = await this.getForecast(city);
+    if (b_forecast) {
+      console.log(`FOUND SOMETHING IN DATABASE`);
+      return b_forecast;
+    }
+
+    // fetch from api
+    console.log("CHECKING API");
+    const c_forecast = await Fetch.fetchForecast(city);
+    if (c_forecast) {
+      console.log(`FOUND SOMETHING IN API`);
+      return c_forecast;
+    }
+
+    return undefined;
+  }
   /**
   // IMPLEMENT DELETE FUNCTIONS AT A LATER DATE
   async deleteDistinctCurrentWeather(

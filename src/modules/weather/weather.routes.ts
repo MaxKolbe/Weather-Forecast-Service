@@ -3,8 +3,9 @@ import {
   getCurrentWeather,
   getWeatherForecast,
   getVisitorDashboard,
-  getClientCurrentWeather,
-  getClientWeatherForecast,
+  // getClientCurrentWeather,
+  // getClientWeatherForecast, 
+  weatherDetails
 } from "./weather.controller.js";
 
 const router = express.Router();
@@ -15,7 +16,8 @@ router.get("/forecast", getWeatherForecast);
 
 // Dashboard routes
 router.get("/home", getVisitorDashboard);
-router.get("/client/current", getClientCurrentWeather);
-router.get("/client/forecast", getClientWeatherForecast); 
+router.post("/weather", weatherDetails)
+// router.get("/client/current", getClientCurrentWeather);
+// router.get("/client/forecast", getClientWeatherForecast); 
 
 export default router;
