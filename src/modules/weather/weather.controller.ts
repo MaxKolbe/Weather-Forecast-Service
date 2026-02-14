@@ -118,9 +118,9 @@ export const getVisitorDashboard = async (req: Request, res: Response, next: Nex
 };
 
 export const weatherDetails = async (req: Request, res: Response, next: NextFunction) => {
-  const city = req.body.city?.toString().toLowerCase().trim();
+  const city = req.query.city ? req.query.city.toString().toLowerCase().trim() : undefined;
 
-  if (city.length === 0) {
+  if (city === undefined) {
     return res.status(400).redirect(`/api/weather/home?message=Please+input+a+city`);
   }
 
@@ -133,7 +133,9 @@ export const weatherDetails = async (req: Request, res: Response, next: NextFunc
     if (currentweather && forecast) {
       return res.render("weather", { req, currentweather, forecast });
     }
-    res.status(400).redirect(`/api/weather/home?message=Could not find weather information for ${city}`);
+    res
+      .status(400)
+      .redirect(`/api/weather/home?message=Could not find weather information for ${city}`);
   } catch (err) {
     return res
       .status(500)
