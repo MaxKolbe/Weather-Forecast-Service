@@ -474,6 +474,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
     return undefined;
   }
+
   async getForecastBundle(city: string) /*: Promise<Forecast | undefined>*/ {
     // Check cache
     console.log("CHECKING FORECAST CACHE");

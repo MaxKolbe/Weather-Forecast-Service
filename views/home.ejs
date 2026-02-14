@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/bitimg.jpg" type="image/x-icon">
     <link rel="stylesheet" href="/output.css" />
     <title>Home | Weather Service</title>
   </head>
@@ -12,20 +13,19 @@
 
     <!-- Search Bar -->
     <div class="w-full mb-10">
-      <form class="flex gap-4" action="/api/weather/weather" method="POST">
-        <input type="text" name="city" placeholder="Search for a location" class="flex-1 px-4 py-3 border border-border rounded-xl outline-none focus:ring-1 focus:ring-border"/>
+      <form class="flex gap-4" action="/api/weather" method="GET">
+        <input type="" name="city"  placeholder="Search for a location" class="flex-1 px-4 py-3 border border-border rounded-xl outline-none focus:ring-1 focus:ring-border"/>
         <button type="submit" class="px-6 py-3 border border-border rounded-xl hover:cursor-pointer"> Search </button>
       </form>
     </div>
 
     <!-- Cards Grid -->
+    <% if(weatherData !== false) {%>
     <p class="text-text text-lg my-2.5 font-bold">Popular Searches:</p>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <!-- Example Card (You will loop this) -->
-       <% if(weatherData !== false) {%>
         <%  weatherData.forEach(weather => {  %>
         <div class="border border-border rounded-2xl p-6">
-            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= weather.city.toUpperCase() %>, <%= weather.country.toUpperCase() %></span></h2>
+            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><a href="/api/weather?city=<%= weather.city.toUpperCase() %>"><%= weather.city.toUpperCase() %>, <%= weather.country.toUpperCase() %></a></span></h2>
             <div class="space-y-2 text-sm">
             <p><strong>Temperature:</strong> <%= weather.temperature %>°C</p>
             <p><strong>Humidity:</strong> <%= weather.humidity %>%</p>
@@ -37,14 +37,15 @@
             </div>
         </div>
         <%  })  %>
-       <%}%>
     </div>
 
     <!-- Load More Button -->
     <div class="mt-12 flex justify-center">
-    
-       <a href="http://<%= req.headers.host%><%= req.baseUrl%>/home?limit=<%= limit + 1%>" class="px-8 py-3 border border-border rounded-xl hover:cursor-pointer">Load More</a>
+      <a href="http://<%= req.headers.host%><%= req.baseUrl%>/home?limit=<%= limit + 1%>" class="px-8 py-3 border border-border rounded-xl hover:cursor-pointer">Load More</a>
     </div>
+    <%} else {%>
+      <h1 class="text-9xl text-center text-text opacity-5">Search For a City!!!</h1>
+    <%}%>
   </div>
   </body>
 </html>

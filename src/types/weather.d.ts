@@ -125,4 +125,6 @@ export interface WeatherService<T> {
   createCity(args: City): Promise<T | undefined>;
   findCity(cityName: string): Promise<T | undefined>;
   findCityIds(cityArray: string[]): Promise<{ id: string }[]>;
+  getCurrentWeatherBundle(city: string);
+  getForecastBundle(city: string); 
 }
