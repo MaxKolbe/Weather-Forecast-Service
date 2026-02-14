@@ -1,10 +1,8 @@
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import path from "path";
-// import appdb from "../../configs/db.config.js";
 import { Weathercache } from "./weather.cache.js";
 import { Weather } from "./weather.controller.js";
-// import { Weatherservice } from "./weather.service.js";
 import {
   Returncurrentweather,
   Returnforecast,
@@ -19,7 +17,6 @@ dotenv.config({
 });
 
 const Cache = new Weathercache();
-// const Weather = new Weatherservice(appdb);
 const API_KEY = process.env.WEATHER_APIKEY;
 
 export class Fetchweather {
