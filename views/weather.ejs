@@ -9,7 +9,6 @@
   <body class="bg-white text-text min-h-screen flex flex-col">
   <!-- Container -->
     <div class="max-w-7xl mx-auto px-6 py-10 w-full flex-1">
-
         <!-- Search Bar -->
         <div class="w-full mb-10">
         <form method="POST" action="/api/weather/weather" class="flex gap-4">
@@ -17,9 +16,9 @@
             <button type="submit" class="px-6 py-3 border border-border rounded-xl hover:cursor-pointer"> Search </button>
         </form>
         </div>
-
+        <!-- Current Weather Table -->
         <div class="border border-border rounded-2xl p-6">
-            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= currentweather.city.toUpperCase() %></span></h2>
+            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= currentweather.city.toUpperCase() %>, <%= currentweather.country.toUpperCase() %></span></h2>
             <div class="space-y-2 text-sm">
             <p><strong>Temperature:</strong> <%= currentweather.temperature %>°C</p>
             <p><strong>Humidity:</strong> <%= currentweather.humidity %>%</p>
@@ -30,32 +29,33 @@
             <p><strong>Sunset:</strong> <%= new Date(currentweather.sunrise).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
             </div>
         </div>
+        <br>
+        <!-- Forecast Table -->
         <% if (forecast.forecast) { %>
-            <div class="border border-border rounded-2xl p-6">
-                <h2 class="text-md font-semibold mb-4">Basic 1-day forecast for: <span class="text-border"><%= currentweather.city.toUpperCase() %></span></h2>
-                <div class="space-y-2 text-sm">
-                <p><strong>Date:</strong> <%= new Date(forecast.forecast.date).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+        <div class="border border-border rounded-2xl p-6">
+            <h2 class="text-md font-semibold mb-4">Basic 1-day forecast for: <span class="text-border"><%= forecast.city.toUpperCase() %>, <%= forecast.country.toUpperCase() %></span></h2>
+            <div class="space-y-2 text-sm">
+                <p><strong>Date:</strong> <%= new Date(forecast.forecast.date).toLocaleString("en-US", { month: 'short', day: 'numeric', hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
                 <p><strong>Temperature:</strong> <%= forecast.forecast.temperature %>°C</p>
                 <p><strong>Humidity:</strong> <%= forecast.forecast.humidity %>%</p>
                 <p><strong>Wind Speed:</strong> <%= forecast.forecast.windSpeed %>m/s</p>
                 <p><strong>Weather Conditions:</strong> <%= forecast.forecast.conditions %></p>
                 <p><strong>Weather Description:</strong> <%= forecast.forecast.description %></p>
-                </div>
             </div>
+        </div>
         <% } else { %>
-                <div class="border border-border rounded-2xl p-6">
-                <h2 class="text-md font-semibold mb-4">Basic 1-day forecast for: <span class="text-border"><%= currentweather.city.toUpperCase() %></span></h2>
-                <div class="space-y-2 text-sm">
-                <p><strong>Date:</strong> <%= new Date(forecast.date).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+        <div class="border border-border rounded-2xl p-6">
+            <h2 class="text-md font-semibold mb-4">Basic 1-day forecast for: <span class="text-border"><%= forecast.city.toUpperCase() %>, <%= forecast.country.toUpperCase() %></span></h2>
+            <div class="space-y-2 text-sm">
+                <p><strong>Date:</strong> <%= new Date(forecast.date).toLocaleString("en-US", { month: 'short', day: 'numeric', hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
                 <p><strong>Temperature:</strong> <%= forecast.temperature %>°C</p>
                 <p><strong>Humidity:</strong> <%= forecast.humidity %>%</p>
                 <p><strong>Wind Speed:</strong> <%= forecast.windSpeed %>m/s</p>
                 <p><strong>Weather Conditions:</strong> <%= forecast.conditions %></p>
                 <p><strong>Weather Description:</strong> <%= forecast.description %></p>
-                </div>
             </div>
+        </div>
         <% } %>
-
     </div>
   </body>
 </html>

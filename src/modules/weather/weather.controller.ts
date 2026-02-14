@@ -88,7 +88,7 @@ export const getWeatherForecast = async (req: Request, res: Response, next: Next
 /* DASHBOARD CONTROLLERS */
 export const getVisitorDashboard = async (req: Request, res: Response, next: NextFunction) => {
   const limit = req.query.limit ? Number(req.query.limit) : 1; // Will implement better pagination
-  const breakoutNumnber = limit * 6;
+  const breakoutNumnber = limit * 4;
   // console.log("Limit", limit);
 
   try {
@@ -106,35 +106,38 @@ export const getVisitorDashboard = async (req: Request, res: Response, next: Nex
         currentweatherArray.push(JSON.parse(w));
       }
 
-      console.log(req.headers.host, req.baseUrl);
       return res.render("home", { req, weatherData: currentweatherArray, limit });
     }
 
     return res.render("home", { req, weatherData: false, limit });
   } catch (err) {
-    next(err);
+    return res
+      .status(500)
+      .redirect(`/api/weather/home?error=There was an error on our side: ${err}`);
   }
 };
 
 export const weatherDetails = async (req: Request, res: Response, next: NextFunction) => {
   const city = req.body.city?.toString().toLowerCase().trim();
-  console.log("Search Query:", city);
 
-  if (city === undefined) {
-    // responseHandler("Please input a city", res, 400);
-    return res.status(400).redirect(`/home?message=Please+input+a+city`);
+  if (city.length === 0) {
+    return res.status(400).redirect(`/api/weather/home?message=Please+input+a+city`);
   }
-  
+
   try {
     const [currentweather, forecast] = await Promise.all([
-      Weather.getCurrentWeatherBundle(city), 
+      Weather.getCurrentWeatherBundle(city),
       Weather.getForecastBundle(city),
     ]);
-    console.log("Forecast", forecast)
 
-    return res.render("weather", {req, currentweather, forecast})
+    if (currentweather && forecast) {
+      return res.render("weather", { req, currentweather, forecast });
+    }
+    res.status(400).redirect(`/api/weather/home?message=Could not find weather information for ${city}`);
   } catch (err) {
-    next(err)
+    return res
+      .status(500)
+      .redirect(`/api/weather/home?error=There was an error on our side: ${err}`);
   }
 };
 

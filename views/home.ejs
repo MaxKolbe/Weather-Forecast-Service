@@ -25,7 +25,7 @@
        <% if(weatherData !== false) {%>
         <%  weatherData.forEach(weather => {  %>
         <div class="border border-border rounded-2xl p-6">
-            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= weather.city.toUpperCase() %></span></h2>
+            <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= weather.city.toUpperCase() %>, <%= weather.country.toUpperCase() %></span></h2>
             <div class="space-y-2 text-sm">
             <p><strong>Temperature:</strong> <%= weather.temperature %>°C</p>
             <p><strong>Humidity:</strong> <%= weather.humidity %>%</p>

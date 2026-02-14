@@ -275,7 +275,6 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
   }
 
   async updateForecast(forecastPatches: ForecastPatches): Promise<Forecast[]> {
-    //*
     const sqlChunks1: SQL[] = [];
     const sqlChunks2: SQL[] = [];
     const sqlChunks3: SQL[] = [];
@@ -450,26 +449,26 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
   async getCurrentWeatherBundle(city: string) /*: Promise<Currentweather | undefined>*/ {
     // Check cache
-    console.log("CHECKING CACHE");
+    console.log("CHECKING CACHE FOR CURRENTWEATHER");
     const a_current_weather = await Cache.get(`get:currentweather:${city}`);
     if (a_current_weather) {
-      console.log(`FOUND SOMETHING IN CACHE`);
+      console.log(`FOUND SOMETHING IN CURRENTWEATHER CACHE`);
       return a_current_weather;
     }
 
     // Check db
-    console.log("CHECKING DATABASE");
-    const b_current_weather = await this.getCurrentWeather(city!);
+    console.log("CHECKING DATABASE FOR CURRENTWEATHER");
+    const b_current_weather = await this.getCurrentWeather(city);
     if (b_current_weather) {
-      console.log(`FOUND SOMETHING IN DATABASE`);
+      console.log(`FOUND SOMETHING IN CURRENTWEATHER DATABASE`);
       return b_current_weather;
     }
 
     // fetch from api
-    console.log("CHECKING API");
-    const c_current_weather = await Fetch.fetchCurrentWeather(city!);
+    console.log("CHECKING API FOR CURRENTWEATHER");
+    const c_current_weather = await Fetch.fetchCurrentWeather(city);
     if (c_current_weather) {
-      console.log(`FOUND SOMETHING IN API`);
+      console.log(`FOUND SOMETHING IN API FOR CURRENTWEATHER`);
       return c_current_weather;
     }
 
@@ -477,31 +476,32 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
   }
   async getForecastBundle(city: string) /*: Promise<Forecast | undefined>*/ {
     // Check cache
-    console.log("CHECKING CACHE");
+    console.log("CHECKING FORECAST CACHE");
     const a_forecast = await Cache.get(`get:forecast:${city}`);
     if (a_forecast) {
-      console.log(`FOUND SOMETHING IN CACHE`);
+      console.log(`FOUND SOMETHING IN FORECAST CACHE`);
       return a_forecast;
     }
 
     // Check db
-    console.log("CHECKING DATABASE");
+    console.log("CHECKING FORECAST DATABASE");
     const b_forecast = await this.getForecast(city);
     if (b_forecast) {
-      console.log(`FOUND SOMETHING IN DATABASE`);
+      console.log(`FOUND SOMETHING IN FORECAST DATABASE`);
       return b_forecast;
     }
 
     // fetch from api
-    console.log("CHECKING API");
+    console.log("CHECKING API FOR FORECAST");
     const c_forecast = await Fetch.fetchForecast(city);
     if (c_forecast) {
-      console.log(`FOUND SOMETHING IN API`);
+      console.log(`FOUND SOMETHING IN API FOR FORECAST`);
       return c_forecast;
     }
 
     return undefined;
   }
+
   /**
   // IMPLEMENT DELETE FUNCTIONS AT A LATER DATE
   async deleteDistinctCurrentWeather(
