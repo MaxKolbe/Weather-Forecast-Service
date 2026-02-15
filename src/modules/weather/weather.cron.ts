@@ -15,7 +15,7 @@ export const updateCurrentWeatherCron = () => {
       }
       return logger.info("Current Weather records updated successfully");
     } catch (err) {
-      return logger.info("There was an error in updating Current Weather records:", err);
+      return logger.error(`There was an error in updating Current Weather records: ${err}`);
     }
   });
 };
@@ -31,7 +31,7 @@ export const updateForecastCron = () => {
       }
       return logger.info("Forecast records updated successfully");
     } catch (err) {
-      return logger.info("There was an error in updating Forecast records:", err);
+      return logger.error(`There was an error in updating Forecast records: ${err}`);
     }
   });
 };
