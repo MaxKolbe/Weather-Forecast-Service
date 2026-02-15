@@ -3,9 +3,7 @@ import {
   getCurrentWeather,
   getWeatherForecast,
   getVisitorDashboard,
-  // getClientCurrentWeather,
-  // getClientWeatherForecast, 
-  weatherDetails
+  weatherDetails,
 } from "./weather.controller.js";
 
 const router = express.Router();
