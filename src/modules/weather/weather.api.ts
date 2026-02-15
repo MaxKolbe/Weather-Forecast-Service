@@ -1,3 +1,4 @@
+import logger from "../../configs/logger.config.js";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import path from "path";
@@ -177,11 +178,11 @@ export class Fetchweather {
         cityKeyArray.push(splitKeys[2]!);
       }
     }
-    console.log("cityKeyArray:", cityKeyArray);
+    logger.debug(`cityKeyArray: ${cityKeyArray}`);
 
     // GET ONLY CITIES THAT ARE IN CURRENTWEATHER TABLE
     const validCities = await Weather.getCurrentWeatherCitys(cityKeyArray);
-    console.log("validCities:", validCities);
+    logger.debug(`validCities: ${validCities}`);
 
     // STORE VALID CITIES' NAMES IN validCityArray ARRAY
     const validCityArray: string[] = [];
@@ -190,11 +191,11 @@ export class Fetchweather {
     }
 
     const cityArray: string[] = validCityArray.sort(); // SORTS CITIES ALPHABETICALLY
-    console.log("List of Cities to update:", cityArray);
+    logger.debug(`List of Cities to update:: ${cityArray}`);
 
     // GET ALL IDS FOR SAID CITYS
     const cityIds = await Weather.findCityIds(cityArray);
-    console.log("City Ids:", cityIds);
+    logger.debug(`City Ids:: ${cityIds}`);
 
     // FOR EACH CITY RETURN CURRENT WEATHER CONDITIONS AND STORE IN AN ARRAY
     let i = 0;
@@ -212,7 +213,7 @@ export class Fetchweather {
       }
 
       const data: any = await response.json();
-      console.log("No. of city I'm fetching now:", i);
+      logger.debug(`No. of city I'm fetching now: ${i}`);
       const input: CurrentWeatherPatch = {
         cityId: cityIds[i++]?.id,
         timestamp: data.dt,
@@ -230,7 +231,7 @@ export class Fetchweather {
       currentWeatherPatches.push(input);
     }
 
-    console.log("Items to use as patches", currentWeatherPatches);
+    logger.debug(`Items to use as patches: ${currentWeatherPatches}`);
 
     // UPDATE THE DB
     if (currentWeatherPatches.length === 0) {
@@ -242,7 +243,7 @@ export class Fetchweather {
     if (result.length === 0) {
       return;
     }
-    console.log("RESULT:", result);
+    logger.debug(`RESULT: ${result}`);
     return true;
   }
 
@@ -258,11 +259,11 @@ export class Fetchweather {
         cityKeyArray.push(splitKeys[2]!);
       }
     }
-    console.log("cityKeyArray:", cityKeyArray);
+    logger.debug(`cityKeyArray: ${cityKeyArray}`);
 
     // GET ONLY CITIES THAT ARE IN FORECAST TABLE
     const validCities = await Weather.getforecastCitys(cityKeyArray);
-    console.log("validCities:", validCities);
+    logger.debug(`validCities: ${validCities}`);
 
     // STORE VALID CITIES' NAMES IN validCityArray ARRAY
     const validCityArray: string[] = [];
@@ -271,11 +272,11 @@ export class Fetchweather {
     }
 
     const cityArray: string[] = validCityArray.sort(); // SORTS CITIES ALPHABETICALLY
-    console.log("List of Cities to update:", cityArray);
+    logger.debug(`List of Cities to update: ${cityArray}`);
 
     // GET ALL IDS FOR SAID CITYS
     const cityIds = await Weather.findCityIds(cityArray);
-    console.log("City Ids:", cityIds);
+    logger.debug(`City Ids: ${cityIds}`);
 
     // FOR EACH CITY RETURN CURRENT FORECAST CONDITIONS AND STORE IN AN ARRAY
     let i = 0;
@@ -293,7 +294,7 @@ export class Fetchweather {
       }
 
       const data: any = await response.json();
-      console.log("No. of city I'm fetching now:", i);
+      logger.debug(`No. of city I'm fetching now: ${i}`);
       const input: ForecastPatch = {
         cityId: cityIds[i++]?.id,
         forecastDate: data.list[0].dt,
@@ -310,7 +311,7 @@ export class Fetchweather {
 
       forecastPatches.push(input);
     }
-    console.log("Items to use as patches", forecastPatches);
+    logger.debug(`Items to use as patches: ${forecastPatches}`);
 
     // UPDATE THE DB
     if (forecastPatches.length === 0) {
@@ -322,7 +323,7 @@ export class Fetchweather {
     if (!result) {
       return;
     }
-    console.log("RESULT:", result);
+    logger.debug(`RESULT: ${result}`);
     return true;
   }
 }

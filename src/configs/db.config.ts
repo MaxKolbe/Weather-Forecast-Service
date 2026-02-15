@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "path";
 import dotenv from "dotenv";
+import logger from "./logger.config.js";
 
 dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
@@ -17,15 +18,15 @@ const pool = new Pool({
 });
 
 pool.on("error", () => {
-  console.log("Error Connecting to the database pool");
+  logger.info("Error Connecting to the database pool");
 });
 
 await pool.query("SELECT 1");
-console.log("Database connected successfully");
+logger.info("Database connected successfully");
 
 const appdb = drizzle({ client: pool });
 
 await appdb.execute("select 1");
-console.log("Drizzle connected successfully");
+logger.info("Drizzle connected successfully");
 
 export default appdb;

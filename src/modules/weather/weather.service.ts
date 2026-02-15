@@ -1,4 +1,5 @@
 import appdb from "../../configs/db.config.js";
+import logger from "../../configs/logger.config.js";
 import { SQL, sql, eq, asc, inArray } from "drizzle-orm";
 import { Weathercache } from "./weather.cache.js";
 import { Fetchweather } from "./weather.api.js";
@@ -251,7 +252,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     const finalSql9: SQL = sql.join(sqlChunks9, sql.raw(" "));
     const finalSql10: SQL = sql.join(sqlChunks10, sql.raw(" "));
 
-    console.log("These are the ids we're using:", ids);
+    logger.debug("These are the ids we're using:", ids);
 
     const result: any = await appdb
       .update(currentweather)
@@ -372,7 +373,7 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
     const finalSql9: SQL = sql.join(sqlChunks9, sql.raw(" "));
     const finalSql10: SQL = sql.join(sqlChunks10, sql.raw(" "));
 
-    console.log("These are the ids we're using:", ids);
+    logger.debug("These are the ids we're using:", ids);
 
     const result: any = await appdb
       .update(forecast)
@@ -449,26 +450,26 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
   async getCurrentWeatherBundle(city: string) /*: Promise<Currentweather | undefined>*/ {
     // Check cache
-    console.log("CHECKING CACHE FOR CURRENTWEATHER");
+    logger.debug("CHECKING CACHE FOR CURRENTWEATHER");
     const a_current_weather = await Cache.get(`get:currentweather:${city}`);
     if (a_current_weather) {
-      console.log(`FOUND SOMETHING IN CURRENTWEATHER CACHE`);
+      logger.debug(`FOUND SOMETHING IN CURRENTWEATHER CACHE`);
       return a_current_weather;
     }
 
     // Check db
-    console.log("CHECKING DATABASE FOR CURRENTWEATHER");
+    logger.debug("CHECKING DATABASE FOR CURRENTWEATHER");
     const b_current_weather = await this.getCurrentWeather(city);
     if (b_current_weather) {
-      console.log(`FOUND SOMETHING IN CURRENTWEATHER DATABASE`);
+      logger.debug(`FOUND SOMETHING IN CURRENTWEATHER DATABASE`);
       return b_current_weather;
     }
 
     // fetch from api
-    console.log("CHECKING API FOR CURRENTWEATHER");
+    logger.debug("CHECKING API FOR CURRENTWEATHER");
     const c_current_weather = await Fetch.fetchCurrentWeather(city);
     if (c_current_weather) {
-      console.log(`FOUND SOMETHING IN API FOR CURRENTWEATHER`);
+      logger.debug(`FOUND SOMETHING IN API FOR CURRENTWEATHER`);
       return c_current_weather;
     }
 
@@ -477,26 +478,26 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
 
   async getForecastBundle(city: string) /*: Promise<Forecast | undefined>*/ {
     // Check cache
-    console.log("CHECKING FORECAST CACHE");
+    logger.debug("CHECKING FORECAST CACHE");
     const a_forecast = await Cache.get(`get:forecast:${city}`);
     if (a_forecast) {
-      console.log(`FOUND SOMETHING IN FORECAST CACHE`);
+      logger.debug(`FOUND SOMETHING IN FORECAST CACHE`);
       return a_forecast;
     }
 
     // Check db
-    console.log("CHECKING FORECAST DATABASE");
+    logger.debug("CHECKING FORECAST DATABASE");
     const b_forecast = await this.getForecast(city);
     if (b_forecast) {
-      console.log(`FOUND SOMETHING IN FORECAST DATABASE`);
+      logger.debug(`FOUND SOMETHING IN FORECAST DATABASE`);
       return b_forecast;
     }
 
     // fetch from api
-    console.log("CHECKING API FOR FORECAST");
+    logger.debug("CHECKING API FOR FORECAST");
     const c_forecast = await Fetch.fetchForecast(city);
     if (c_forecast) {
-      console.log(`FOUND SOMETHING IN API FOR FORECAST`);
+      logger.debug(`FOUND SOMETHING IN API FOR FORECAST`);
       return c_forecast;
     }
 
