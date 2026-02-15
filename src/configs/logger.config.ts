@@ -12,7 +12,7 @@ dotenv.config({
 const logtail = new Logtail(process.env.SOURCE_TOKEN!.toString(), {
   endpoint: `https://${process.env.INGESTING_HOST!.toString()}`,
 });
-const { combine, timestamp, json, errors } = winston.format;
+const { combine, timestamp, json, errors, align } = winston.format;
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || "info",
@@ -22,12 +22,12 @@ const logger = winston.createLogger({
     }),
     json(),
     errors({ stack: true }),
+    align(),
   ),
   transports: [
-    new winston.transports.Console(), 
-    //new LogtailTransport(logtail)
+    new winston.transports.Console(),
+    new LogtailTransport(logtail)
   ],
 });
 
 export default logger;
-  

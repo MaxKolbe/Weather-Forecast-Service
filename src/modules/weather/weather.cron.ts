@@ -1,4 +1,5 @@
 import schedule from "node-schedule";
+import logger from "../../configs/logger.config.js";
 import { Fetchweather } from "./weather.api.js";
 
 const Fetch = new Fetchweather();
@@ -6,15 +7,15 @@ const Fetch = new Fetchweather();
 export const updateCurrentWeatherCron = () => {
   // runs every two hours
   schedule.scheduleJob("0 */2 * * *", async () => {
-    // console.log("Running updateCurrentWeather function...");
+    logger.info("Running updateCurrentWeather function...");
     try {
       const taskState = await Fetch.updateCurrentWeatherData();
       if (taskState === undefined) {
-        return console.log("Current Weather records update failed");
+        return logger.info("Current Weather records update failed");
       }
-      return console.log("Current Weather records updated successfully");
+      return logger.info("Current Weather records updated successfully");
     } catch (err) {
-      return console.log("There was an error in updating Current Weather records:", err);
+      return logger.info("There was an error in updating Current Weather records:", err);
     }
   });
 };
@@ -22,15 +23,15 @@ export const updateCurrentWeatherCron = () => {
 export const updateForecastCron = () => {
   // runs every three hours
   schedule.scheduleJob("0 */3 * * *", async () => {
-    // console.log("Running updateForecastCron function...");
+    logger.info("Running updateForecastCron function...");
     try {
       const taskState = await Fetch.updateForecastData();
       if (taskState === undefined) {
-        return console.log("Forecast records update failed");
+        return logger.info("Forecast records update failed");
       }
-      return console.log("Forecast records updated successfully");
+      return logger.info("Forecast records updated successfully");
     } catch (err) {
-      return console.log("There was an error in updating Forecast records:", err);
+      return logger.info("There was an error in updating Forecast records:", err);
     }
   });
 };
