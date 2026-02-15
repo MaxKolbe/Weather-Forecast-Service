@@ -8,6 +8,12 @@
     <title>Home | Weather Service</title>
   </head>
   <body class="bg-white text-text min-h-screen flex flex-col">
+  <% if (req.query.error) { %>
+    <span id="popup" class="text-red-700 mx-auto text-center mt-2 border-2 border-red-700 p-0.5 w-fit"><h3><%= req.query.error%></h3></span>
+  <% } %>
+  <% if (req.query.message) { %>
+    <span id="popup" class="text-green-700 mx-auto text-center mt-2 border-2 border-green-700 p-0.5 w-fit"><h3><%= req.query.message%></h3></span>
+  <% } %>
   <!-- Container -->
   <div class="max-w-7xl mx-auto px-6 py-10 w-full flex-1">
 
@@ -47,5 +53,18 @@
       <h1 class="text-9xl text-center text-text opacity-5">Search For a City!!!</h1>
     <%}%>
   </div>
+
+  <!-- JavaScript to hide the error message after 3 seconds -->
+  <script>
+    window.onload = function() {
+        const popup = document.getElementById('popup');
+        if (popup) {
+            setTimeout(() => {
+              popup.style.display = 'none';
+            }, 3000);
+        };
+    };
+
+  </script>
   </body>
 </html>

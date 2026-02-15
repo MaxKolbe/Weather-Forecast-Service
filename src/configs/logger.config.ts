@@ -26,7 +26,7 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new LogtailTransport(logtail)
+    // new LogtailTransport(logtail)
   ],
 });
 
