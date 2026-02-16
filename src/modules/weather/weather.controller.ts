@@ -51,8 +51,7 @@ export const getCurrentWeather = async (req: Request, res: Response, next: NextF
       logger.error(`${err}`)
       return responseHandler(`Weather service timed out. Reload or Try again`, res, 504);
     }
-    logger.error(`${err}`)
-    return next(err);
+    return next(err); 
   }
 };
 
@@ -97,7 +96,6 @@ export const getWeatherForecast = async (req: Request, res: Response, next: Next
       logger.error(`${err}`)
       return responseHandler(`Weather service timed out. Reload or Try again`, res, 504);
     }
-    logger.error(`${err}`)
     return next(err);
   }
 };
@@ -127,7 +125,6 @@ export const getVisitorDashboard = async (req: Request, res: Response, next: Nex
 
     return res.render("home", { req, weatherData: false, limit });
   } catch (err: any) {
-    logger.error(`${err}`)
     return res
       .status(500)
       .redirect(`/api/weather/home?error=There was an error on our side: ${err.message}`);
@@ -165,7 +162,6 @@ export const weatherDetails = async (req: Request, res: Response, next: NextFunc
         .status(500)
         .redirect(`/api/weather/home?error=Error: Reload or Try again`);
     }
-    logger.error(`${err}`)
     return res
       .status(500)
       .redirect(`/api/weather/home?error=There was an error on our side: ${err.message}`);
@@ -220,7 +216,6 @@ export const getClientCurrentWeather = async (req: Request, res: Response, next:
         .status(500)
         .redirect(`/api/weather/home?error=Error: Reload or Try again`);
     }
-    logger.error(`${err}`)
     return res
       .status(500)
       .redirect(`/api/weather/home?error=There was an error on our side: ${err.message}`);

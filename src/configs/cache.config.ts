@@ -7,10 +7,30 @@ dotenv.config({
   path: path.resolve(process.cwd(), ".env"),
 });
 
-const redisClient = createClient(/*{url: process.env.REDIS_URL!*/);
+const MAX_RETRIES = 5;
+
+const redisClient = createClient({
+  /*url: process.env.REDIS_URL!,*/
+  socket: {
+    reconnectStrategy: (retries) => {
+      if (retries >= MAX_RETRIES) {
+        logger.error(`Max retries (${MAX_RETRIES}) reached. Stop connection attempts.`);
+        return new Error("Max retries reached");
+      }
+      // Generate a random jitter between 0 – 100 ms: 
+      const jitter = Math.floor(Math.random() * 100);
+
+      // Delay is an exponential backoff, (2^retries) * 50 ms, with a
+      // maximum value of 3000 ms:
+      const delay = Math.min(Math.pow(2, retries) * 50, 3000);
+
+      return delay + jitter;
+    },
+  },
+});
 
 redisClient.on("error", (err) => {
-  logger.info("Redis Client Creation Error:", err);
+  logger.error(`Redis Client Creation Error: ${err}`);
 });
 
 export async function connectRedis() {
@@ -18,7 +38,7 @@ export async function connectRedis() {
     await redisClient.connect();
     logger.info("Redis Client connected");
   } catch (err) {
-    logger.info("Redis Connection Error:", err);
+    logger.error(`Redis Connection Error: ${err}`);
   }
 }
 
