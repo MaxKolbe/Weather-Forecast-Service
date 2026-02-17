@@ -10,8 +10,11 @@ dotenv.config({
 const MAX_RETRIES = 5;
 
 const redisClient = createClient({
-  /*url: process.env.REDIS_URL!,*/
+  username: process.env.REDIS_USERNAME!.toString(),
+  password: process.env.REDIS_PASSWORD!.toString(),
   socket: {
+    host: process.env.REDIS_HOST!.toString(),
+    port: Number(process.env.REDIS_PORT!),
     reconnectStrategy: (retries) => {
       if (retries >= MAX_RETRIES) {
         logger.error(`Max retries (${MAX_RETRIES}) reached. Stop connection attempts.`);

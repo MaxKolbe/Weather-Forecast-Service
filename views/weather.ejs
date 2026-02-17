@@ -12,12 +12,12 @@
     <div class="max-w-7xl mx-auto px-6 py-10 w-full flex-1">
         <!-- Search Bar -->
         <div class="w-full mb-10">
-        <form method="GET" action="/api/weather" class="flex gap-4">
+        <form method="GET" action="/api/v1/weather" class="flex gap-4">
             <input type="text" name="city" placeholder="Search for a location" class="flex-1 px-4 py-3 border border-border rounded-xl outline-none focus:ring-1 focus:ring-border"/>
             <button type="submit" class="px-6 py-3 border border-border rounded-xl hover:cursor-pointer"> Search </button>
         </form>
         </div>
-        <a href="/api/weather/home" class="text-border text-lg my-2.5 font-bold">Go home&#8592;</a>
+        <a href="/api/v1/weather/home" class="text-border text-lg my-2.5 font-bold">Go home&#8592;</a>
         <!-- Current Weather Table -->
         <div class="border border-border rounded-2xl p-6 mt-2">
             <h2 class="text-md font-semibold mb-4">Current weather for: <span class="text-border"><%= currentweather.city.toUpperCase() %>, <%= currentweather.country.toUpperCase() %></span></h2>

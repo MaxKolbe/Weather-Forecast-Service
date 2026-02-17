@@ -11,7 +11,7 @@ export default defineConfig({
   dialect: "postgresql",
   schema: "./src/db/schema.ts",
   dbCredentials: {
-    url: `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DATABASE}`,
-    ssl: false,
+    url: `postgresql://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DATABASE}?sslmode=verify-full`
+    // used ?sslmode=verify-full to avoid adding the ssl property
   },
 });

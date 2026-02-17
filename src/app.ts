@@ -18,7 +18,7 @@ connectRedis();
 updateCurrentWeatherCron();
 updateForecastCron();
 
-app.use("/api/weather", weatherRoute);
+app.use("/api/v1/weather", weatherRoute);
 
 app.use(errorHandler);
 
