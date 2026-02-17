@@ -39,7 +39,7 @@
             <p><strong>Weather Conditions:</strong> <%= weather.conditions %></p>
             <p><strong>Pressure:</strong> <%= weather.pressure %>hPa</p>
             <p><strong>Sunrise:</strong> <%= new Date(weather.sunrise).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
-            <p><strong>Sunset:</strong> <%= new Date(weather.sunrise).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
+            <p><strong>Sunset:</strong> <%= new Date(weather.sunset).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true }).replace(" "," "); %></p>
             </div>
         </div>
         <%  })  %>
