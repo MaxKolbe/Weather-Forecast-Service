@@ -24,10 +24,7 @@ const logger = winston.createLogger({
     errors({ stack: true }),
     align(),
   ),
-  transports: [
-    new winston.transports.Console(),
-    // new LogtailTransport(logtail)
-  ],
+  transports: [new winston.transports.Console(), new LogtailTransport(logtail)],
 });
 
 export default logger;
