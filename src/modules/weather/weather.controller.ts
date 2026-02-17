@@ -127,7 +127,7 @@ export const getVisitorDashboard = async (req: Request, res: Response, next: Nex
   } catch (err: any) {
     return res
       .status(500)
-      .redirect(`/api/weather/home?error=There was an error on our side: ${err.message}`);
+      .redirect(`/api/v1/weather/home?error=There was an error on our side: ${err.message}`);
   }
 };
 
@@ -135,7 +135,7 @@ export const weatherDetails = async (req: Request, res: Response, next: NextFunc
   const city = req.query.city ? req.query.city.toString().toLowerCase().trim() : undefined;
 
   if (city === undefined) {
-    return res.status(400).redirect(`/api/weather/home?message=Please+input+a+city`);
+    return res.status(400).redirect(`/api/v1/weather/home?message=Please+input+a+city`);
   }
 
   try {
@@ -149,22 +149,22 @@ export const weatherDetails = async (req: Request, res: Response, next: NextFunc
     }
     res
       .status(400)
-      .redirect(`/api/weather/home?message=Could not find weather information for ${city}`);
+      .redirect(`/api/v1/weather/home?message=Could not find weather information for ${city}`);
   } catch (err: any) {
     if (err.message.includes("ENOTFOUND api.openweathermap.org")) {
       logger.error(`${err}`)
       return res
         .status(500)
-        .redirect(`/api/weather/home?error=Error: Check your nextwork and try again`);
+        .redirect(`/api/v1/weather/home?error=Error: Check your nextwork and try again`);
     } else if (err.message.includes("connect ETIMEDOUT")) {
       logger.error(`${err}`)
       return res
         .status(500)
-        .redirect(`/api/weather/home?error=Error: Reload or Try again`);
+        .redirect(`/api/v1/weather/home?error=Error: Reload or Try again`);
     }
     return res
       .status(500)
-      .redirect(`/api/weather/home?error=There was an error on our side: ${err.message}`);
+      .redirect(`/api/v1/weather/home?error=There was an error on our side: ${err.message}`);
   }
 };
 
@@ -209,16 +209,16 @@ export const getClientCurrentWeather = async (req: Request, res: Response, next:
       logger.error(`${err}`)
       return res
         .status(500)
-        .redirect(`/api/weather/home?error=Error: Check your nextwork and try again`);
+        .redirect(`/api/v1/weather/home?error=Error: Check your nextwork and try again`);
     } else if (err.message.includes("connect ETIMEDOUT")) {
       logger.error(`${err}`)
       return res
         .status(500)
-        .redirect(`/api/weather/home?error=Error: Reload or Try again`);
+        .redirect(`/api/v1/weather/home?error=Error: Reload or Try again`);
     }
     return res
       .status(500)
-      .redirect(`/api/weather/home?error=There was an error on our side: ${err.message}`);
+      .redirect(`/api/v1/weather/home?error=There was an error on our side: ${err.message}`);
   }
 };
 
@@ -262,16 +262,16 @@ export const getClientWeatherForecast = async (req: Request, res: Response, next
       logger.error(`${err}`)
       return res
         .status(500)
-        .redirect(`/api/weather/home?error=Error: Check your nextwork and try again`);
+        .redirect(`/api/v1/weather/home?error=Error: Check your nextwork and try again`);
     } else if (err.message.includes("connect ETIMEDOUT")) {
       logger.error(`${err}`)
       return res
         .status(500)
-        .redirect(`/api/weather/home?error=Error: Reload or Try again`);
+        .redirect(`/api/v1/weather/home?error=Error: Reload or Try again`);
     }
     return res
       .status(500)
-      .redirect(`/api/weather/home?error=There was an error on our side: ${err.message}`);
+      .redirect(`/api/v1/weather/home?error=There was an error on our side: ${err.message}`);
   }
 };
 /** */
