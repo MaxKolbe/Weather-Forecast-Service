@@ -15,7 +15,5 @@ router.get("/forecast", getWeatherForecast);
 // Dashboard routes
 router.get("/home", getVisitorDashboard);
 router.get("/", weatherDetails)
-// router.get("/client/current", getClientCurrentWeather);
-// router.get("/client/forecast", getClientWeatherForecast); 
 
 export default router;

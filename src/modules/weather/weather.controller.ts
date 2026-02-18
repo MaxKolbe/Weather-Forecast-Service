@@ -13,7 +13,7 @@ export const Weather = new Weatherservice(appdb);
 export const getCurrentWeather = async (req: Request, res: Response, next: NextFunction) => {
   const city = req.query.city?.toString().toLowerCase();
 
-  if (city === undefined) {
+  if (city === undefined || city.length === 0) {
     return responseHandler("Please input a city", res, 400);
   }
 
@@ -58,7 +58,7 @@ export const getCurrentWeather = async (req: Request, res: Response, next: NextF
 export const getWeatherForecast = async (req: Request, res: Response, next: NextFunction) => {
   const city = req.query.city?.toString().toLowerCase();
 
-  if (city === undefined) {
+  if (city === undefined || city.length === 0) {
     return responseHandler("Please input a city", res, 400);
   }
 
@@ -107,7 +107,7 @@ export const getVisitorDashboard = async (req: Request, res: Response, next: Nex
 
   try {
     // Check cache
-    logger.debug(`CHECKING CACHE`);
+    logger.debug(`CHECKING CACHE FOR HOME DASHBOARD`);
     const current_weather = await Cache.getall(`get:currentweather`);
     if (current_weather) {
       let i = 0;
@@ -119,7 +119,7 @@ export const getVisitorDashboard = async (req: Request, res: Response, next: Nex
         i++;
         currentweatherArray.push(JSON.parse(w));
       }
-
+      logger.debug(`FOUND DATA IN CACHE FOR HOME DASHBOARD`);
       return res.render("home", { req, weatherData: currentweatherArray, limit });
     }
 
@@ -134,7 +134,7 @@ export const getVisitorDashboard = async (req: Request, res: Response, next: Nex
 export const weatherDetails = async (req: Request, res: Response, next: NextFunction) => {
   const city = req.query.city ? req.query.city.toString().toLowerCase().trim() : undefined;
 
-  if (city === undefined) {
+  if (city === undefined || city.length === 0) {
     return res.status(400).redirect(`/api/v1/weather/home?message=Please+input+a+city`);
   }
 
@@ -167,111 +167,3 @@ export const weatherDetails = async (req: Request, res: Response, next: NextFunc
       .redirect(`/api/v1/weather/home?error=There was an error on our side: ${err.message}`);
   }
 };
-
-/** */
-export const getClientCurrentWeather = async (req: Request, res: Response, next: NextFunction) => {
-  const city = req.query.city?.toString().toLowerCase();
-
-  if (city === undefined) {
-    return res.status(400).redirect(`/home?message=Please+input+a+city`);
-  }
-
-  try {
-    // Check cache
-    logger.debug("CHECKING CACHE");
-    const a_current_weather = await Cache.get(`get:currentweather:${city}`);
-    if (a_current_weather) {
-      logger.debug(`FOUND SOMETHING IN CACHE`);
-      return res.render("weather.html", { req, currentweather: a_current_weather });
-    }
-
-    // Check db
-    logger.debug("CHECKING DATABASE");
-    const b_current_weather = await Weather.getCurrentWeather(city!);
-    if (b_current_weather) {
-      logger.debug(`FOUND SOMETHING IN DATABASE`);
-      return res.render("weather.html", { req, currentweather: b_current_weather });
-    }
-
-    // fetch from api
-    logger.debug("CHECKING API");
-    const c_current_weather = await Fetch.fetchCurrentWeather(city!);
-    if (c_current_weather) {
-      logger.debug(`FOUND SOMETHING IN API`);
-      return res.render("weather.html", { req, currentweather: c_current_weather });
-    }
-
-    return res
-      .status(404)
-      .redirect(`/home?message=Could+not+find+the+Current+Weather+of+city:+${city}`);
-  } catch (err: any) {
-    if (err.message.includes("ENOTFOUND api.openweathermap.org")) {
-      logger.error(`${err}`)
-      return res
-        .status(500)
-        .redirect(`/api/v1/weather/home?error=Error: Check your nextwork and try again`);
-    } else if (err.message.includes("connect ETIMEDOUT")) {
-      logger.error(`${err}`)
-      return res
-        .status(500)
-        .redirect(`/api/v1/weather/home?error=Error: Reload or Try again`);
-    }
-    return res
-      .status(500)
-      .redirect(`/api/v1/weather/home?error=There was an error on our side: ${err.message}`);
-  }
-};
-
-export const getClientWeatherForecast = async (req: Request, res: Response, next: NextFunction) => {
-  const city = req.query.city?.toString().toLowerCase();
-
-  if (city === undefined) {
-    return res.status(400).redirect(`/home?message=Please+input+a+city`);
-  }
-
-  try {
-    // Check cache
-    logger.debug("CHECKING CACHE");
-    const a_forecast = await Cache.get(`get:forecast:${city}`);
-    if (a_forecast) {
-      logger.debug(`FOUND SOMETHING IN CACHE`);
-      return res.render("weather.html", { req, forecast: a_forecast });
-    }
-
-    // Check db
-    logger.debug("CHECKING DATABASE");
-    const b_forecast = await Weather.getForecast(city!);
-    if (b_forecast) {
-      logger.debug(`FOUND SOMETHING IN DATABASE`);
-      return res.render("weather.html", { req, forecast: b_forecast });
-    }
-
-    // fetch from api
-    logger.debug("CHECKING API");
-    const c_forecast = await Fetch.fetchForecast(city!);
-    if (c_forecast) {
-      logger.debug(`FOUND SOMETHING IN API`);
-      return res.render("weather.html", { req, forecast: c_forecast });
-    }
-
-    return res
-      .status(404)
-      .redirect(`/home?message=Could+not+find+the+Weather+Forecast+for+city:+${city}`);
-  } catch (err: any) {
-    if (err.message.includes("ENOTFOUND api.openweathermap.org")) {
-      logger.error(`${err}`)
-      return res
-        .status(500)
-        .redirect(`/api/v1/weather/home?error=Error: Check your nextwork and try again`);
-    } else if (err.message.includes("connect ETIMEDOUT")) {
-      logger.error(`${err}`)
-      return res
-        .status(500)
-        .redirect(`/api/v1/weather/home?error=Error: Reload or Try again`);
-    }
-    return res
-      .status(500)
-      .redirect(`/api/v1/weather/home?error=There was an error on our side: ${err.message}`);
-  }
-};
-/** */
