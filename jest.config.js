@@ -1,13 +1,9 @@
-/** @type {import('jest').Config} */
+import { createDefaultEsmPreset } from "ts-jest";
 
-const config = {
-  verbose: true,
-  preset: "ts-jest",
-  transform: {
-    "^.+\\.tsx?$": "ts-jest"
+export default {
+  ...createDefaultEsmPreset(),
+  roots: ["<rootDir>/src"],
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
-  testRegex: "((\\.|/)(test|spec))\\.tsx?$", 
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"]
 };
-
-export default config

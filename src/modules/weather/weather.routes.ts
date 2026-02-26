@@ -4,13 +4,13 @@ import {
   getWeatherForecast,
   getVisitorDashboard,
   weatherDetails,
-} from "./weather.controller";
+} from "./weather.controller";  
 
 const router = express.Router();
 
 // API routes
-router.get("/current", getCurrentWeather);
-router.get("/forecast", getWeatherForecast);
+router.get("/current", getCurrentWeather);   
+router.get("/forecast", getWeatherForecast); 
 
 // Dashboard routes
 router.get("/home", getVisitorDashboard);
