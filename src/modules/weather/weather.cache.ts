@@ -2,7 +2,7 @@ import isStringArray from "../../utils/isStringArray.js";
 import redisClient from "../../configs/cache.config.js";
 import appdb from "../../configs/db.config.js";
 import { sql } from "drizzle-orm";
-import { city } from "./weather.schema";
+import { city } from "./weather.schema.js";
 import { JointWeatherService } from "../../types/weather.js";
 
 export class Weathercache {
