@@ -1,9 +1,9 @@
-import logger from "../../configs/logger.config";
+import logger from "../../configs/logger.config.js";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 import path from "path";
-import { Weathercache } from "./weather.cache";
-import { Weather } from "./weather.controller";
+import { Weathercache } from "./weather.cache.js";
+import { Weather } from "./weather.controller.js";
 import {
   Returncurrentweather,
   Returnforecast,
@@ -11,7 +11,7 @@ import {
   CurrentWeatherPatches,
   ForecastPatch,
   ForecastPatches,
-} from "../../types/weather";
+} from "../../types/weather.js";
 
 dotenv.config({
   path: path.resolve(process.cwd(), ".env"),

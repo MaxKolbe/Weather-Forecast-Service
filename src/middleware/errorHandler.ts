@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import logger from "../configs/logger.config";
+import logger from "../configs/logger.config.js";
 
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   // console.log(`Internal Server Error: ${err.stack} \n`);

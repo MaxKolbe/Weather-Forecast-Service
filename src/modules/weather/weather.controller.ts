@@ -1,10 +1,10 @@
-import appdb from "../../configs/db.config";
-import logger from "../../configs/logger.config";
-import responseHandler from "../../utils/responseHandler";
+import appdb from "../../configs/db.config.js";
+import logger from "../../configs/logger.config.js";
+import responseHandler from "../../utils/responseHandler.js";
 import { Request, Response, NextFunction } from "express";
-import { Weatherservice } from "./weather.service";
-import { Weathercache } from "./weather.cache";
-import { Fetchweather } from "./weather.api";
+import { Weatherservice } from "./weather.service.js";
+import { Weathercache } from "./weather.cache.js";
+import { Fetchweather } from "./weather.api.js";
 
 const Fetch = new Fetchweather();
 const Cache = new Weathercache();
