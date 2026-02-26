@@ -5,23 +5,23 @@ import dotenv from "dotenv";
 import logger from "./logger.config.js";
 
 dotenv.config({
-  path: path.resolve(process.cwd(), ".env"), 
+  path: path.resolve(process.cwd(), ".env"),
 });
 
-const dbMap = new Map([ 
+const dbMap = new Map([
   ["development", process.env.PG_DATABASE_DEV_URL],
   ["test", process.env.PG_DATABASE_TEST_URL],
-  ["production", process.env.PG_DATABASE_PROD_URL]
-])
-const dburl = dbMap.get(process.env.NODE_ENV!) 
+  ["production", process.env.PG_DATABASE_PROD_URL],
+]);
+const dburl = dbMap.get(process.env.NODE_ENV!);
 
 const pool = new Pool({
   connectionString: dburl,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 });
 
 pool.on("error", () => {
-  logger.info("Error Connecting to the database pool"); 
+  logger.info("Error Connecting to the database pool");
 });
 
 // await pool.query("SELECT 1");

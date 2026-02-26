@@ -12,19 +12,19 @@ const MAX_RETRIES = 5;
 const redisMap = new Map([
   ["test", process.env.REDIS_TEST_URL],
   ["development", process.env.REDIS_DEV_URL],
-  ["production", process.env.REDIS_PROD_URL],  
-])
-const redisUrl = redisMap.get(process.env.NODE_ENV!)
+  ["production", process.env.REDIS_PROD_URL],
+]);
+const redisUrl = redisMap.get(process.env.NODE_ENV!);
 
 const redisClient = createClient({
   url: redisUrl!,
-  socket: { 
+  socket: {
     reconnectStrategy: (retries) => {
       if (retries >= MAX_RETRIES) {
         logger.error(`Max retries (${MAX_RETRIES}) reached. Stop connection attempts.`);
         return new Error("Max retries reached");
       }
-      // Generate a random jitter between 0 – 100 ms: 
+      // Generate a random jitter between 0 – 100 ms:
       const jitter = Math.floor(Math.random() * 100);
 
       // Delay is an exponential backoff, (2^retries) * 50 ms, with a
