@@ -2,7 +2,7 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import path from "path";
 import dotenv from "dotenv";
-import logger from "./logger.config.js";
+import logger from "./logger.config";
 
 dotenv.config({
   path: path.resolve(process.cwd(), ".env"),

@@ -1,9 +1,9 @@
-import appdb from "../../configs/db.config.js";
-import logger from "../../configs/logger.config.js";
+import appdb from "../../configs/db.config";
+import logger from "../../configs/logger.config";
 import { SQL, sql, eq, asc, inArray } from "drizzle-orm";
-import { Weathercache } from "./weather.cache.js";
-import { Fetchweather } from "./weather.api.js";
-import { city, currentweather, forecast } from "./weather.schema.js";
+import { Weathercache } from "./weather.cache";
+import { Fetchweather } from "./weather.api";
+import { city, currentweather, forecast } from "./weather.schema";
 import {
   City,
   Currentweather,
@@ -14,7 +14,7 @@ import {
   WeatherService,
   CurrentWeatherPatches,
   ForecastPatches,
-} from "../../types/weather.js";
+} from "../../types/weather";
 
 const Cache = new Weathercache();
 const Fetch = new Fetchweather();

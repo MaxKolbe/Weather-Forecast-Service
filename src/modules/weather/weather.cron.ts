@@ -1,6 +1,6 @@
 import schedule from "node-schedule";
-import logger from "../../configs/logger.config.js";
-import { Fetchweather } from "./weather.api.js";
+import logger from "../../configs/logger.config";
+import { Fetchweather } from "./weather.api";
 
 const Fetch = new Fetchweather();
 

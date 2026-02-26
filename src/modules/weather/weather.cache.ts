@@ -1,9 +1,9 @@
-import isStringArray from "../../utils/isStringArray.js";
-import redisClient from "../../configs/cache.config.js";
-import appdb from "../../configs/db.config.js";
+import isStringArray from "../../utils/isStringArray";
+import redisClient from "../../configs/cache.config";
+import appdb from "../../configs/db.config";
 import { sql } from "drizzle-orm";
-import { city } from "./weather.schema.js";
-import { JointWeatherService } from "../../types/weather.js";
+import { city } from "./weather.schema";
+import { JointWeatherService } from "../../types/weather";
 
 export class Weathercache {
   constructor() {}

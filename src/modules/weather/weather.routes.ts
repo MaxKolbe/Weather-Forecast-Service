@@ -4,7 +4,7 @@ import {
   getWeatherForecast,
   getVisitorDashboard,
   weatherDetails,
-} from "./weather.controller.js";
+} from "./weather.controller";
 
 const router = express.Router();
 
