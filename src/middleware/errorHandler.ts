@@ -4,6 +4,7 @@ import logger from "../configs/logger.config.js";
 const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
   // console.log(`Internal Server Error: ${err.stack} \n`);
   logger.error(`Internal Server Error: ${err.stack} \n`);
+  logger.info("INTERNAL SERVER ERROR CAUSE:", err.cause);
   res.status(500).json({
     status: 500,
     message: "Internal Server Error",
@@ -12,3 +13,4 @@ const errorHandler = (err: Error, req: Request, res: Response, next: NextFunctio
 };
 
 export default errorHandler;
+ 
