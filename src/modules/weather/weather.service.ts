@@ -400,7 +400,10 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       .select({ cityName: city.name })
       .from(city)
       .innerJoin(currentweather, eq(currentweather.cityId, city.id))
-      .where(inArray(city.name, cityNames));
+      .where(
+        sql`${city.name} IN ${cityNames} AND ${city.lastSearched} > (now() - interval '12 hours')`,
+      ); // now returns frequently search citys within a 12hour interval
+    // .where(inArray(city.name, cityNames));
 
     return result;
   }
@@ -410,7 +413,10 @@ export class Weatherservice implements WeatherService<JointWeatherService> {
       .select({ cityName: city.name })
       .from(city)
       .innerJoin(forecast, eq(forecast.cityId, city.id))
-      .where(inArray(city.name, cityNames));
+      .where(
+        sql`${city.name} IN ${cityNames} AND ${city.lastSearched} > (now() - interval '12 hours')`,
+      ); // now returns frequently search citys within a 12hour interval
+    // .where(inArray(city.name, cityNames));
 
     return result;
   }
