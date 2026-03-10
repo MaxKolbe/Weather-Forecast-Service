@@ -102,25 +102,20 @@ export const getWeatherForecast = async (req: Request, res: Response, next: Next
 
 /* DASHBOARD CONTROLLER */
 export const getVisitorDashboard = async (req: Request, res: Response, next: NextFunction) => {
-  const limit = req.query.limit ? Number(req.query.limit) : 1; // Will implement better pagination
-  const breakoutNumnber = limit * 4;
+  const query = req.query.limit ? Number(req.query.limit) : 1; 
+  const limit = query * 2; 
 
   try {
     // Check cache
     logger.debug(`CHECKING CACHE FOR HOME DASHBOARD`);
-    const current_weather = await Cache.getall(`get:currentweather`);
+    const current_weather = await Cache.getAllValues(`get:currentweather:*`, limit);
     if (current_weather) {
-      let i = 0;
       const currentweatherArray = [];
-      for (let w of current_weather) {
-        if (i === breakoutNumnber) {
-          break;
-        }
-        i++;
+      for (let w of current_weather) { 
         currentweatherArray.push(JSON.parse(w));
-      }
+      } 
       logger.debug(`FOUND DATA IN CACHE FOR HOME DASHBOARD`);
-      return res.render("home", { req, weatherData: currentweatherArray, limit });
+      return res.render("home", { req, weatherData: currentweatherArray, limit: query });
     }
 
     return res.render("home", { req, weatherData: false, limit });

@@ -24,7 +24,9 @@ export class Weathercache {
   }
 
   async getall(key: string): Promise<string[] | undefined> {
+    //blocking operation
     const keysArray = await redisClient.keys(`${key}:*`);
+    console.log("keysArray:", keysArray);
 
     if (keysArray.length === 0) {
       return undefined;
@@ -45,10 +47,43 @@ export class Weathercache {
   }
 
   async getkeys(key: string): Promise<string[] | undefined> {
+    // blocking operation
     const keys = await redisClient.keys(`${key}:*`);
+    console.log("keys:", keys);
     return keys ? keys : undefined;
   }
-  
+
+  //using scan
+  async getAllValues(keypattern: string, limit: number): Promise<string[] | undefined> {
+    //non blocking
+    let cursor = "0";
+    const keySet = new Set<string>();
+    const valueArray: string[] = [];
+
+    do {
+      const { cursor: nextCursor, keys } = await redisClient.scan(cursor, {
+        MATCH: keypattern,
+        COUNT: 10,
+      });
+
+      for (const key of keys) {
+        const value = await redisClient.get(key);
+        if (typeof value === "string") {
+          if (keySet.has(value)) continue;
+          keySet.add(value);
+          valueArray.push(value);
+        }
+      
+        if (valueArray.length === limit) {
+          return valueArray;
+        }
+      }
+
+      cursor = nextCursor;
+    } while (cursor !== "0");
+    return valueArray;
+  }
+
   /**
   // IMPLEMENT DELETE CACHE KEY PATTERNS FUNCTION AT A LATER DATE 
   async delPattern(pattern: string): Promise<string[] | undefined> {
