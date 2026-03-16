@@ -194,7 +194,7 @@ Before setting up the project, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone [<repository-url>](https://github.com/MaxKolbe/Weather-Forecast-Service.git)
+git clone https://github.com/MaxKolbe/Weather-Forecast-Service.git
 cd Weather-Forecast-Service
 ```
 
