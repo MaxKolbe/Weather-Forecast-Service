@@ -2,7 +2,7 @@ import isStringArray from "../../utils/isStringArray.js";
 import redisClient from "../../configs/cache.config.js";
 import appdb from "../../configs/db.config.js";
 import { sql } from "drizzle-orm";
-import { city } from "./weather.schema.js";
+import { city } from "./weather.models.js";
 import { JointWeatherService } from "../../types/weather.js";
 
 export class Weathercache {
@@ -73,7 +73,7 @@ export class Weathercache {
           keySet.add(value);
           valueArray.push(value);
         }
-      
+
         if (valueArray.length === limit) {
           return valueArray;
         }

@@ -3,7 +3,7 @@ import logger from "../../configs/logger.config.js";
 import { SQL, sql, eq, asc, inArray } from "drizzle-orm";
 import { Weathercache } from "./weather.cache.js";
 import { Fetchweather } from "./weather.api.js";
-import { city, currentweather, forecast } from "./weather.schema.js";
+import { city, currentweather, forecast } from "./weather.models.js";
 import {
   City,
   Currentweather,

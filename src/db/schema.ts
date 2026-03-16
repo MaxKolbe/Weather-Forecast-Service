@@ -1,1 +1,1 @@
-export * from "../modules/weather/weather.schema";
+export * from "../modules/weather/weather.models";

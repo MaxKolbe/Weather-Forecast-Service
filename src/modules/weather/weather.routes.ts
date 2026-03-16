@@ -1,4 +1,6 @@
 import express from "express";
+import { validateQueryData } from "./weather.middleware.js";
+import { querySchema } from "./weather.schemas.js";
 import {
   getCurrentWeather,
   getWeatherForecast,
@@ -22,6 +24,6 @@ router.get("/forecast", getWeatherForecast);
 
 // Dashboard routes
 router.get("/home", getVisitorDashboard);
-router.get("/", weatherDetails)
+router.get("/", validateQueryData(querySchema), weatherDetails)
 
 export default router;
