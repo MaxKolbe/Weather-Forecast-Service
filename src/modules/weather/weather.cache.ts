@@ -49,7 +49,6 @@ export class Weathercache {
   async getkeys(key: string): Promise<string[] | undefined> {
     // blocking operation
     const keys = await redisClient.keys(`${key}:*`);
-    console.log("keys:", keys);
     return keys ? keys : undefined;
   }
 

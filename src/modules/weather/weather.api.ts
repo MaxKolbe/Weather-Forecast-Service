@@ -206,9 +206,6 @@ export class Fetchweather {
       );
 
       if (!response.ok) {
-        if (response.status === 404) {
-          return;
-        }
         throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
       }
 
@@ -243,6 +240,7 @@ export class Fetchweather {
     if (result.length === 0) {
       return;
     }
+
     logger.debug(`RESULT: ${result}`);
     return true;
   }
@@ -287,9 +285,6 @@ export class Fetchweather {
       );
 
       if (!response.ok) {
-        if (response.status === 404) {
-          return;
-        }
         throw new Error(`Fetch failed with status: ${response.status}. Try again.`);
       }
 
